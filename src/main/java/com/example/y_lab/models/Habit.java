@@ -1,5 +1,6 @@
 package com.example.y_lab.models;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,14 +8,18 @@ public class Habit {
     private int id;
     private String title;
     private String description;
-    private String frequency; // daily, weekly, etc.
+    private String frequency;
     private List<HabitCompletion> completions;
 
-    public Habit(int id, String title, String description, String frequency) {
+    private final LocalDate creationDate;
+
+
+    public Habit(int id, String title, String description, String frequency, LocalDate creationDate) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.frequency = frequency;
+        this.creationDate = creationDate;
         this.completions = new ArrayList<>();
     }
 
@@ -52,5 +57,9 @@ public class Habit {
 
     public void addCompletion(HabitCompletion completion) {
         completions.add(completion);
+    }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
     }
 }

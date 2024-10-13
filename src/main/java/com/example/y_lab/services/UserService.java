@@ -2,7 +2,9 @@ package com.example.y_lab.services;
 
 import com.example.y_lab.models.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserService {
@@ -36,7 +38,22 @@ public class UserService {
         userRepository.remove(user.getId());
     }
 
+    public List<User> getAllUsers() {
+        return new ArrayList<>(userRepository.values());
+    }
+    public void blockUser(User user) {
+        user.setBlocked(true);
+    }
+
+    public void deleteUserAsAdmin(String email) {
+        userRepository.remove(email);
+    }
+
     private boolean isEmailTaken(String email) {
         return userRepository.values().stream().anyMatch(user -> user.getEmail().equals(email));
+    }
+
+    public User findUserByEmail(String email) {
+        return userRepository.get(email);
     }
 }
