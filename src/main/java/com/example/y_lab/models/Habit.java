@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Habit {
+    private final LocalDate creationDate;
     private int id;
     private String title;
     private String description;
     private String frequency;
     private List<HabitCompletion> completions;
-
-    private final LocalDate creationDate;
 
 
     public Habit(int id, String title, String description, String frequency, LocalDate creationDate) {
@@ -31,28 +30,28 @@ public class Habit {
         return title;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getFrequency() {
-        return frequency;
-    }
-
-    public List<HabitCompletion> getCompletions() {
-        return completions;
-    }
-
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public String getFrequency() {
+        return frequency;
+    }
+
     public void setFrequency(String frequency) {
         this.frequency = frequency;
+    }
+
+    public List<HabitCompletion> getCompletions() {
+        return completions;
     }
 
     public void addCompletion(HabitCompletion completion) {

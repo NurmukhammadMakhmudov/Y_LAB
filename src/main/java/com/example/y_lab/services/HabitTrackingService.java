@@ -53,6 +53,7 @@ public class HabitTrackingService {
         }
         return startDate;
     }
+
     public long calculateStreak(Habit habit) {
         List<HabitCompletion> completions = habit.getCompletions().stream()
                 .filter(HabitCompletion::isCompleted)  // Фильтруем только выполненные привычки
