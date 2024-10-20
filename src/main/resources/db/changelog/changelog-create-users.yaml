@@ -12,13 +12,12 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-                    nullable: false
               - column:
                   name: email
                   type: VARCHAR(255)
                   constraints:
-                    unique: true
                     nullable: false
+                    unique: true
               - column:
                   name: password
                   type: VARCHAR(255)
@@ -32,4 +31,9 @@ databaseChangeLog:
               - column:
                   name: is_blocked
                   type: BOOLEAN
-                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+        - createSequence:
+            sequenceName: user_sequence
+            startValue: 1
+            incrementBy: 1

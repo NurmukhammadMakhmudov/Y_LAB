@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 public class HabitTrackingService {
 
     public void markHabitCompletion(Habit habit, LocalDate date, boolean completed) {
-        HabitCompletion completion = new HabitCompletion(date, completed);
+        HabitCompletion completion = new HabitCompletion();
+        completion.setCompleted(completed);
+        completion.setDate(date);
         habit.addCompletion(completion);
     }
 

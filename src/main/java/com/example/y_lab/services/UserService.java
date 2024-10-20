@@ -1,5 +1,6 @@
 package com.example.y_lab.services;
 
+import com.example.y_lab.models.Habit;
 import com.example.y_lab.models.User;
 import com.example.y_lab.repositories.UserRepository;
 
@@ -15,7 +16,10 @@ public class UserService {
         if (userRepository.isEmailTaken(email)) {
             throw new IllegalArgumentException("Email is already taken.");
         }
-        User user = new User(userIdCounter++, email, password, name);
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setName(name);
         userRepository.createUser(user);
     }
 

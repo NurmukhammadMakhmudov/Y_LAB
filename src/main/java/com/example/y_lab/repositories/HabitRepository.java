@@ -10,7 +10,10 @@ public class HabitRepository {
     private int habitIdCounter = 1;
 
     public void addHabit(User user, String title, String description, String frequency) {
-        Habit habit = new Habit(habitIdCounter++, title, description, frequency, LocalDate.now());
+        Habit habit = new Habit();
+        habit.setTitle(title);
+        habit.setDescription(description);
+        habit.setFrequency(frequency);
         user.addHabit(habit);
     }
 
