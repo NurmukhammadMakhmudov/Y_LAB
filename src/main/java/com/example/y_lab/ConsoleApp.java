@@ -36,20 +36,23 @@ public class ConsoleApp {
     public void userMenu(User user) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("1. Create Habit");
-            System.out.println("2. View Habits");
-            System.out.println("3. Edit Habit");
-            System.out.println("4. Delete Habit");
-            System.out.println("5. Mark Habit Completion");
-            System.out.println("6. View Habit Details");
-            System.out.println("7. View Habit Statistics");
-            System.out.println("8. View Streak for Habit");
-            System.out.println("9. Edit Profile");
-            System.out.println("10. Delete Account");
-            System.out.println("11. View All Users and Habits (Admin)");
-            System.out.println("12. Block User (Admin)");
-            System.out.println("13. Delete User (Admin)");
-            System.out.println("14. Logout");
+
+            System.out.println("""
+                    1. Create Habit
+                    2. View Habits
+                    3. Edit Habit
+                    4. Delete Habit
+                    5. Mark Habit Completion
+                    6. View Habit Details
+                    7. View Habit Statistics
+                    8. View Streak for Habit
+                    9. Edit Profile
+                    10. Delete Account
+                    11. View All Users and Habits (Admin)
+                    12. Block User (Admin)
+                    13. Delete User (Admin)
+                    14. Logout
+                   """);
             int choice = scanner.nextInt();
             scanner.nextLine();
             switch (choice) {
@@ -94,8 +97,6 @@ public class ConsoleApp {
                     break;
                 case 14:
                     return;
-
-
             }
         }
     }
