@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 1
+      id: 3
       author: Nurmukhammad
       changes:
         - createTable:
-            tableName: users
+            tableName: habit_completions
             columns:
               - column:
                   name: id
@@ -13,27 +13,24 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
-                  name: email
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: password
-                  type: VARCHAR(255)
+                  name: date
+                  type: DATE
                   constraints:
                     nullable: false
               - column:
-                  name: name
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: is_blocked
+                  name: completed
                   type: BOOLEAN
                   constraints:
                     nullable: false
-        - createSequence:
-            sequenceName: user_sequence
-            startValue: 1
-            incrementBy: 1
+              - column:
+                  name: habit_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: habit_completions
+            baseColumnNames: habit_id
+            constraintName: fk_habit_completions_habit
+            referencedTableName: habits
+            referencedColumnNames: id
+            onDelete: CASCADE

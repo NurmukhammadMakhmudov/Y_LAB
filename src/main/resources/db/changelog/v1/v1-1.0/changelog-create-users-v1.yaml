@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 2
+      id: 1
       author: Nurmukhammad
       changes:
         - createTable:
-            tableName: habits
+            tableName: users
             columns:
               - column:
                   name: id
@@ -12,35 +12,25 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-                    nullable: false
               - column:
-                  name: title
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column:
-                  name: description
-                  type: TEXT
-                  constraints:
-                    nullable: false
-              - column:
-                  name: frequency
+                  name: username
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column:
-                  name: creation_date
-                  type: DATE
+                  name: is_blocked
+                  type: BOOLEAN
                   constraints:
                     nullable: false
-              - column:
-                  name: user_id
-                  type: BIGINT
-                  constraints:
-                    nullable: false
-        - addForeignKeyConstraint:
-            baseTableName: habits
-            baseColumnNames: user_id
-            referencedTableName: users
-            referencedColumnNames: id
-            onDelete: CASCADE
+

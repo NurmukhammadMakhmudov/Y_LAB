@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 8
+      author: Nurmukhammad
+      changes:
+        - insert:
+            tableName: habits
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: creation_date
+                  value: '2024-10-01'  # Используйте формат YYYY-MM-DD
+              - column:
+                  name: title
+                  value: 'Drink Water'
+              - column:
+                  name: description
+                  value: 'Drink 2 liters of water every day.'
+              - column:
+                  name: frequency
+                  value: 'daily'
+              - column:
+                  name: user_id
+                  value: '1'
+
+  - changeSet:
+      id: 9
+      author: Nurmukhammad
+      changes:
+        - insert:
+            tableName: habit_completions
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: habit_id
+                  value: '1'
+              - column:
+                  name: date
+                  value: '2024-10-02 10:00:00'
+              - column:
+                  name: completed
+                  value: true

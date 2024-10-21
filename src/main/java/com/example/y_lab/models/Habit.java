@@ -17,9 +17,8 @@ import java.util.Objects;
 public class Habit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_seq")
-//    @SequenceGenerator(name = "habit_seq", sequenceName = "habi_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_seq")
+    @SequenceGenerator(name = "habit_seq", sequenceName = "habit_sequence", allocationSize = 1)
     private Long id;
     @Column(name = "creation_date", nullable = false)
     private LocalDate creationDate;
