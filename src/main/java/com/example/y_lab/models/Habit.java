@@ -17,8 +17,9 @@ import java.util.Objects;
 public class Habit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_seq")
-    @SequenceGenerator(name = "habit_seq", sequenceName = "habi_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_seq")
+//    @SequenceGenerator(name = "habit_seq", sequenceName = "habi_sequence", allocationSize = 1)
     private Long id;
     @Column(name = "creation_date", nullable = false)
     private LocalDate creationDate;
@@ -32,7 +33,7 @@ public class Habit {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @ToString.Exclude
     private List<HabitCompletion> completions;
 

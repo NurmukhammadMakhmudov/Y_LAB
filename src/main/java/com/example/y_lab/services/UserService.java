@@ -1,38 +1,51 @@
 package com.example.y_lab.services;
 
-import com.example.y_lab.models.Habit;
 import com.example.y_lab.models.User;
+import com.example.y_lab.repositories.HabitRepository;
 import com.example.y_lab.repositories.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
 public class UserService {
 
-    private final UserRepository userRepository = new UserRepository();
+    private final UserRepository userRepository;
+    private final HabitRepository habitRepository;
 
-    private long userIdCounter = 1;
+
+
+    public UserService(UserRepository userRepository, HabitRepository habitRepository) {
+        this.userRepository = userRepository;
+        this.habitRepository = habitRepository;
+    }
 
     public void registerUser(String email, String password, String name) {
-        if (userRepository.isEmailTaken(email)) {
-            throw new IllegalArgumentException("Email is already taken.");
+        Optional<User> user1 = userRepository.findByEmail(email);
+        if (user1.isEmpty()) {
+            User user = new User();
+            user.setEmail(email);
+            user.setPassword(password);
+            user.setName(name);
+            userRepository.save(user);
         }
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setName(name);
-        userRepository.createUser(user);
+        else
+            throw new IllegalArgumentException("Email is already taken.");
     }
 
     public User login(String email, String password) {
         Optional<User> user = userRepository.findByEmailAndPassword(email, password);
-        if (user.isPresent())
-            return user.get();
+        if (user.isPresent() )
+            if (!user.get().isBlocked())
+                return user.get();
+            else
+                throw new IllegalArgumentException("User Blocked");
         throw new IllegalArgumentException("Invalid email or password.");
     }
 
 
     public List<User> getAllUsers() {
-        return userRepository.getAllUsers();
+        return userRepository.findAll();
     }
 
 
@@ -45,16 +58,26 @@ public class UserService {
         System.out.print("Enter new password: ");
         String newPassword = scanner.nextLine();
 
-        userRepository.updateUser(user, newName, newEmail, newPassword);
+        updateUser(user, newName, newEmail, newPassword);
         System.out.println("Profile updated successfully.");
     }
+
+    public void updateUser(User user, String name, String email, String password)
+    {
+        user.setName(name);
+        user.setEmail(email);
+        user.setPassword(password);
+        userRepository.save(user);
+
+    }
+
 
     public void deleteUser(User user) {
         System.out.println("Are you sure you want to delete your account? (yes/no)");
         Scanner scanner = new Scanner(System.in);
         String confirmation = scanner.nextLine();
         if (confirmation.equalsIgnoreCase("yes")) {
-            userRepository.deleteUser(user);
+            userRepository.delete(user);
             System.out.println("Account deleted.");
             // Автоматический выход после удаления аккаунта
             System.exit(0);
@@ -67,7 +90,7 @@ public class UserService {
         List<User> users = getAllUsers();
         users.forEach(user -> {
             System.out.println("User: " + user.getEmail() + " - " + user.getName());
-            user.getHabits().forEach(habit -> {
+            habitRepository.findByUser(user).forEach(habit -> {
                 System.out.println("  Habit: " + habit.getTitle() + " - " + habit.getFrequency());
             });
         });
@@ -77,9 +100,10 @@ public class UserService {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter user email to block: ");
         String email = scanner.nextLine();
-        User user = userRepository.findUserByEmail(email);
-        if (user != null) {
-            userRepository.blockUser(user);
+        if (userRepository.findByEmail(email).isPresent()) {
+            User user = userRepository.findByEmail(email).get();
+            user.setBlocked(true);
+            userRepository.save(user);
             System.out.println("User " + email + " has been blocked.");
         } else {
             System.out.println("User not found.");
@@ -90,7 +114,14 @@ public class UserService {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter user email to delete: ");
         String email = scanner.nextLine();
-        userRepository.deleteUserAsAdmin(email);
-        System.out.println("User " + email + " has been deleted.");
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent())
+        {
+            userRepository.delete(user.get());
+            System.out.println("User " + email + " has been deleted.");
+        }
+        else
+            System.out.println("User" + email + " not found");
+
     }
 }

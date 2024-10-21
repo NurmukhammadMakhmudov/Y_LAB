@@ -1,21 +1,37 @@
 package com.example.y_lab;
 
+import com.example.y_lab.models.Habit;
 import com.example.y_lab.models.User;
-import com.example.y_lab.services.HabitService;
-import com.example.y_lab.services.AuthenticationService;
 import com.example.y_lab.repositories.HabitRepository;
+import com.example.y_lab.services.AuthenticationService;
+import com.example.y_lab.services.HabitService;
 import com.example.y_lab.services.HabitTrackingService;
 import com.example.y_lab.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.Scanner;
 
-public class ConsoleApp {
-    private final UserService userService = new UserService();
-    private final HabitRepository habitRepository = new HabitRepository();
-    private final HabitTrackingService habitTrackingService = new HabitTrackingService();
-    private final AuthenticationService authenticationService = new AuthenticationService(userService, this);
-    private final HabitService habitService = new HabitService(habitRepository, habitTrackingService);
+@Component
+public class ConsoleApp implements CommandLineRunner {
 
+    private final AuthenticationService authenticationService;
+    private final HabitService habitService;
+    private final UserService userService;
+
+    @Autowired
+    public ConsoleApp(AuthenticationService authenticationService, HabitService habitService, UserService userService) {
+        this.authenticationService = authenticationService;
+        this.habitService = habitService;
+        this.userService = userService;
+    }
+
+    @Override
+    public void run(String... args) {
+        start();
+    }
 
     public void start() {
         Scanner scanner = new Scanner(System.in);
@@ -27,8 +43,14 @@ public class ConsoleApp {
             scanner.nextLine();
             switch (choice) {
                 case 1 -> authenticationService.register();
-                case 2 -> authenticationService.login();
+                case 2 -> {
+                    Optional<User> user = authenticationService.login();
+                    if (user.isEmpty())
+                        return;
+                    userMenu(user.get());
+                }
                 case 3 -> System.exit(0);
+                default -> System.out.println("Invalid choice. Please try again.");
             }
         }
     }
@@ -36,7 +58,6 @@ public class ConsoleApp {
     public void userMenu(User user) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-
             System.out.println("""
                     1. Create Habit
                     2. View Habits
@@ -56,53 +77,24 @@ public class ConsoleApp {
             int choice = scanner.nextInt();
             scanner.nextLine();
             switch (choice) {
-                case 1:
-                    habitService.createHabit(user);
-                    break;
-                case 2:
-                    habitService.viewHabits(user);
-                    break;
-                case 3:
-                    habitService.editHabit(user);
-                    break;
-                case 4:
-                    habitService.deleteHabit(user);
-                    break;
-                case 5:
-                    habitService.markCompletion(user);
-                    break;
-                case 6:
-                    habitService.viewHabitDetails(user);
-                    break;
-                case 7:
-                    habitService.viewHabitStatisticsByPeriod(user);
-                    break;
-                case 8:
-                    habitService.viewStreakForHabit(user);
-                    break;
-                case 9:
-                    userService.editUserProfile(user);
-                    break;
-                case 10:
-                    userService.deleteUser(user);
-                    break;
-                case 11:
-                    userService.viewAllUsers();
-                    break;
-                case 12:
-                    userService.blockUser();
-                    break;
-                case 13:
-                    userService.deleteUserAsAdmin();
-                    break;
-                case 14:
-                    return;
+                case 1 -> habitService.createHabit(user);
+                case 2 -> habitService.viewHabits(user);
+                case 3 -> habitService.editHabit(user);
+                case 4 -> habitService.deleteHabit(user);
+                case 5 -> habitService.markCompletion(user);
+                case 6 -> habitService.viewHabitDetails(user);
+                case 7 -> habitService.viewHabitStatisticsByPeriod(user);
+                case 8 -> habitService.viewStreakForHabit(user);
+                case 9 -> userService.editUserProfile(user);
+                case 10 -> userService.deleteUser(user);
+                case 11 -> userService.viewAllUsers();
+                case 12 -> userService.blockUser();
+                case 13 -> userService.deleteUserAsAdmin();
+                case 14 -> {
+                    return; // Logout
+                }
+                default -> System.out.println("Invalid choice. Please try again.");
             }
         }
-    }
-
-
-    public static void main(String[] args) {
-        new ConsoleApp().start();
     }
 }

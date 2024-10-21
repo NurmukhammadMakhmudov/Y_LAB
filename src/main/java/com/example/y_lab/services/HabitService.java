@@ -3,12 +3,16 @@ package com.example.y_lab.services;
 import com.example.y_lab.models.Habit;
 import com.example.y_lab.models.User;
 import com.example.y_lab.repositories.HabitRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 
+
+@Service
 public class HabitService {
 
     private final HabitRepository habitRepository;
@@ -20,14 +24,17 @@ public class HabitService {
     }
 
     public void createHabit(User user) {
+        Habit habit = new Habit();
         Scanner scanner = new Scanner(System.in);
         System.out.print("Title: ");
-        String title = scanner.nextLine();
+        habit.setTitle(scanner.nextLine());
         System.out.print("Description: ");
-        String description = scanner.nextLine();
+        habit.setDescription(scanner.nextLine());
         System.out.print("Frequency (daily/weekly): ");
-        String frequency = scanner.nextLine();
-        habitRepository.addHabit(user, title, description, frequency);
+        habit.setFrequency(scanner.nextLine());
+        habit.setUser(user);
+        habit.setCreationDate(LocalDate.now());
+        habitRepository.save(habit);
         System.out.println("Habit created.");
     }
 
@@ -35,8 +42,8 @@ public class HabitService {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Filter by frequency (daily/weekly) or press Enter to see all: ");
         String filter = scanner.nextLine().toLowerCase();
-
-        user.getHabits().stream()
+        List<Habit> list = habitRepository.findByUser(user);
+        list.stream()
                 .filter(habit -> filter.isEmpty() || habit.getFrequency().toLowerCase().equals(filter))
                 .forEach(habit -> System.out.println(habit.getId() + ". " + habit.getTitle() + " (" + habit.getFrequency() + ")"));
     }
@@ -47,7 +54,7 @@ public class HabitService {
         int id = scanner.nextInt();
         scanner.nextLine(); // consume newline
 
-        Optional<Habit> habit = habitRepository.findHabitById(user, id);
+        Optional<Habit> habit = habitRepository.findById(id);
         if (habit.isPresent()) {
             Habit h = habit.get();
             System.out.println("Title: " + h.getTitle());
@@ -66,15 +73,15 @@ public class HabitService {
         System.out.print("Enter habit ID to edit: ");
         int id = scanner.nextInt();
         scanner.nextLine();
-        Optional<Habit> habit = habitRepository.findHabitById(user, id);
+        Optional<Habit> habit = habitRepository.findById(id);
         if (habit.isPresent()) {
             System.out.print("New Title: ");
-            String title = scanner.nextLine();
+            habit.get().setTitle(scanner.nextLine());
             System.out.print("New Description: ");
-            String description = scanner.nextLine();
+            habit.get().setDescription(scanner.nextLine());
             System.out.print("New Frequency (daily/weekly): ");
-            String frequency = scanner.nextLine();
-            habitRepository.editHabit(habit.get(), title, description, frequency);
+            habit.get().setFrequency(scanner.nextLine());
+            habitRepository.save(habit.get());
             System.out.println("Habit updated.");
         } else {
             System.out.println("Habit not found.");
@@ -86,9 +93,9 @@ public class HabitService {
         viewHabits(user);
         System.out.print("Enter habit ID to delete: ");
         int id = scanner.nextInt();
-        Optional<Habit> habit = habitRepository.findHabitById(user, id);
+        Optional<Habit> habit = habitRepository.findById(id);
         if (habit.isPresent()) {
-            habitRepository.deleteHabit(user, habit.get());
+            habitRepository.delete(habit.get());
             System.out.println("Habit deleted.");
         } else {
             System.out.println("Habit not found.");
@@ -100,8 +107,8 @@ public class HabitService {
         viewHabits(user);
         System.out.print("Enter habit ID to mark completion: ");
         int id = scanner.nextInt();
-        scanner.nextLine(); // consume newline
-        Optional<Habit> habit = habitRepository.findHabitById(user, id);
+        scanner.nextLine();
+        Optional<Habit> habit = habitRepository.findById(id);
         if (habit.isPresent()) {
             System.out.print("Completion date (YYYY-MM-DD): ");
             LocalDate date = LocalDate.parse(scanner.nextLine());
@@ -132,17 +139,16 @@ public class HabitService {
     }
     public void viewStreakForHabit(User user) {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter habit title to view streak: ");
-        String title = scanner.nextLine();
+        viewHabits(user);
+        System.out.print("Enter habit ID to mark completion: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        Optional<Habit> habit = habitRepository.findById(id);
 
-        Habit habit = user.getHabits().stream()
-                .filter(h -> h.getTitle().equalsIgnoreCase(title))
-                .findFirst()
-                .orElse(null);
 
-        if (habit != null) {
-            long streak = habitTrackingService.calculateStreak(habit);
-            System.out.println("Current streak for habit '" + habit.getTitle() + "' (" + habit.getFrequency() + "): " + streak);
+        if (habit.isPresent()) {
+            long streak = habitTrackingService.calculateStreak(habit.get());
+            System.out.println("Current streak for habit '" + habit.get().getTitle() + "' (" + habit.get().getFrequency() + "): " + streak);
         } else {
             System.out.println("Habit not found.");
         }

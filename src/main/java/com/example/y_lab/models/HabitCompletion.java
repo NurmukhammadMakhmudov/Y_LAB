@@ -15,8 +15,9 @@ import java.time.LocalDate;
 public class HabitCompletion {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_completions_seq")
-    @SequenceGenerator(name = "habit_completions_seq", sequenceName = "habit_completions_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_completions_seq")
+//    @SequenceGenerator(name = "habit_completions_seq", sequenceName = "habit_completions_sequence", allocationSize = 1)
     private Long id;
     @Column(nullable = false)
     private LocalDate date;

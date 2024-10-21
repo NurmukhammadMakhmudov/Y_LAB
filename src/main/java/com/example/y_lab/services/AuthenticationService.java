@@ -2,18 +2,22 @@ package com.example.y_lab.services;
 
 import com.example.y_lab.ConsoleApp;
 import com.example.y_lab.models.User;
+import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Scanner;
 
+@Service
 public class AuthenticationService {
 
     private final UserService userService;
-    private final ConsoleApp consoleApp;
 
-    public AuthenticationService(UserService userService, ConsoleApp consoleApp) {
+    public AuthenticationService(UserService userService) {
         this.userService = userService;
-        this.consoleApp = consoleApp;
+
     }
+
+
 
     public void register() {
         Scanner scanner = new Scanner(System.in);
@@ -31,7 +35,7 @@ public class AuthenticationService {
         }
     }
 
-    public void login() {
+    public Optional<User> login() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Email: ");
         String email = scanner.nextLine();
@@ -40,9 +44,10 @@ public class AuthenticationService {
         try {
             User user = userService.login(email, password);
             System.out.println("Login successful. Welcome, " + user.getName());
-            consoleApp.userMenu(user);
+            return Optional.of(user);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
+        return Optional.empty();
     }
 }
