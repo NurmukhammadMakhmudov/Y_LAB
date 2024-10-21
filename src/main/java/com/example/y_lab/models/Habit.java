@@ -1,65 +1,55 @@
 package com.example.y_lab.models;
 
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.Hibernate;
+
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@Entity
+@Table(name = "habits")
 public class Habit {
-    private int id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_seq")
+    @SequenceGenerator(name = "habit_seq", sequenceName = "habit_sequence", allocationSize = 1)
+    private Long id;
+    @Column(name = "creation_date", nullable = false)
+    private LocalDate creationDate;
+    @Column(nullable = false)
     private String title;
+    @Column(nullable = false)
     private String description;
+    @Column(nullable = false)
     private String frequency;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
     private List<HabitCompletion> completions;
-
-    private final LocalDate creationDate;
-
-
-    public Habit(int id, String title, String description, String frequency, LocalDate creationDate) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.frequency = frequency;
-        this.creationDate = creationDate;
-        this.completions = new ArrayList<>();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getFrequency() {
-        return frequency;
-    }
-
-    public List<HabitCompletion> getCompletions() {
-        return completions;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setFrequency(String frequency) {
-        this.frequency = frequency;
-    }
 
     public void addCompletion(HabitCompletion completion) {
         completions.add(completion);
     }
 
-    public LocalDate getCreationDate() {
-        return creationDate;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Habit habit = (Habit) o;
+        return id != null && Objects.equals(id, habit.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

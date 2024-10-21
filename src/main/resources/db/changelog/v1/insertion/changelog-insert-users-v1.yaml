@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: 7
+      author: Nurmukhammad
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  value: 'user1@example.com'
+              - column:
+                  name: password
+                  value: 'password1'
+              - column:
+                  name: username
+                  value: 'User One'
+              - column:
+                  name: is_blocked
+                  value: false
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  value: 'user2@example.com'
+              - column:
+                  name: password
+                  value: 'password2'
+              - column:
+                  name: username
+                  value: 'User Two'
+              - column:
+                  name: is_blocked
+                  value: false
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  value: 'user3@example.com'
+              - column:
+                  name: password
+                  value: 'password3'
+              - column:
+                  name: username
+                  value: 'User Three'
+              - column:
+                  name: is_blocked
+                  value: false
