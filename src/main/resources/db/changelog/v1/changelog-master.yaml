@@ -1,5 +1,7 @@
 databaseChangeLog:
   - include:
+      file: db/changelog/v1/v1-1.0/changelog-create-schema.yaml
+  - include:
       file: db/changelog/v1/v1-1.0/changelog-create-users-v1.yaml
   - include:
       file: db/changelog/v1/v1-1.0/changelog-create-habits-v1.yaml

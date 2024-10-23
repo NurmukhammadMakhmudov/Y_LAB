@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Nurmukhammad
+      changes:
+        - sql:
+            sql: "CREATE SCHEMA IF NOT EXISTS ylab_schema"

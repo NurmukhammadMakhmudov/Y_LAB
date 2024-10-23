@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 2
+      id: 3
       author: Nurmukhammad
       changes:
         - createTable:
@@ -38,6 +38,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:
+            schemaName: ylab_schema
             baseTableName: habits
             baseColumnNames: user_id
             constraintName: fk_habits_user

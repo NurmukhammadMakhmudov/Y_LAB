@@ -13,7 +13,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @Entity
-@Table(name = "habits")
+@Table(name = "habits", schema = "ylab_schema")
 public class Habit {
 
     @Id

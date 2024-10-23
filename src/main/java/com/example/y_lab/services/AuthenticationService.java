@@ -46,7 +46,7 @@ public class AuthenticationService {
             System.out.println("Login successful. Welcome, " + user.getName());
             return Optional.of(user);
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println("Error: User not found");
         }
         return Optional.empty();
     }

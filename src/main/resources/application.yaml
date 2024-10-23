@@ -4,6 +4,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/y_lab
     username: y_lab
     password: password
+
+
+
   liquibase:
     change-log:  classpath:db/changelog/main-changelog.xml
     enabled: true

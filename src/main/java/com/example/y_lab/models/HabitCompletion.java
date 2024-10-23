@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor
 @Entity
-@Table(name = "habit_completions")
+@Table(name = "habit_completions", schema = "ylab_schema")
 public class HabitCompletion {
 
     @Id
