@@ -5,6 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: users
+            schemaName: ylab_schema
             columns:
               - column:
                   name: id

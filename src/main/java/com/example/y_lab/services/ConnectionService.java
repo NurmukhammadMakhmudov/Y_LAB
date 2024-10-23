@@ -5,7 +5,7 @@ import org.hibernate.annotations.processing.SQL;
 import java.sql.*;
 
 public class ConnectionService {
-    private final static String URL = "jdbc:postgresql://localhost:5432/y_lab";
+    private final static String URL = "jdbc:postgresql://localhost:5432/y_lab?currentSchema=ylab_schema";
     private final static String USER_NAME = "y_lab";
     private final static String PASSWORD = "password";
     private Connection connection;

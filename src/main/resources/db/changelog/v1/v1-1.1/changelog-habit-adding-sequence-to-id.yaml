@@ -4,6 +4,7 @@ databaseChangeLog:
       author: Nurmukhammad
       changes:
         - createSequence:
+            schemaName: ylab_schema
             sequenceName: habit_sequence
             startValue: 1
             incrementBy: 1

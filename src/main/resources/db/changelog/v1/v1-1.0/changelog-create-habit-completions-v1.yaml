@@ -1,10 +1,11 @@
 databaseChangeLog:
   - changeSet:
-      id: 4
+      id: 7
       author: Nurmukhammad
       changes:
         - createTable:
             tableName: habit_completions
+            schemaName: ylab_schema
             columns:
               - column:
                   name: id

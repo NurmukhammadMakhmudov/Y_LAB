@@ -1,9 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 7
+      id: 8
       author: Nurmukhammad
       changes:
         - createSequence:
+            schemaName: ylab_schema
             sequenceName: habit_completions_sequence
             startValue: 1
             incrementBy: 1

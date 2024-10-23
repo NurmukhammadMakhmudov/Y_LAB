@@ -1,10 +1,11 @@
 databaseChangeLog:
   - changeSet:
-      id: 9
+      id: 10
       author: Nurmukhammad
       changes:
         - insert:
             tableName: habits
+            schemaName: ylab_schema
             columns:
               - column:
                   name: id
@@ -26,11 +27,12 @@ databaseChangeLog:
                   value: '1'
 
   - changeSet:
-      id: 10
+      id: 11
       author: Nurmukhammad
       changes:
         - insert:
             tableName: habit_completions
+            schemaName: ylab_schema
             columns:
               - column:
                   name: id

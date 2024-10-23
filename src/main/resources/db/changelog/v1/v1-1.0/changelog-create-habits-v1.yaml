@@ -1,10 +1,11 @@
 databaseChangeLog:
   - changeSet:
-      id: 3
+      id: 4
       author: Nurmukhammad
       changes:
         - createTable:
             tableName: habits
+            schemaName: ylab_schema
             columns:
               - column:
                   name: id
@@ -37,6 +38,10 @@ databaseChangeLog:
                   type: BIGINT
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 5
+      author: Nurmukhammad
+      changes:
         - addForeignKeyConstraint:
             schemaName: ylab_schema
             baseTableName: habits

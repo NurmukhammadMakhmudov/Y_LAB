@@ -1,9 +1,13 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/y_lab
+    url: jdbc:postgresql://localhost:5432/y_lab?currentSchema=ylab_schema
     username: y_lab
     password: password
+  jpa:
+    properties:
+      hibernate:
+        default_schema: ylab_schema
 
 
 
