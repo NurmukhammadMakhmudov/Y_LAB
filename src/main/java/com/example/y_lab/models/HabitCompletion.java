@@ -6,25 +6,44 @@ import lombok.*;
 import java.time.LocalDate;
 
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@Entity
-@Table(name = "habit_completions", schema = "ylab_schema")
+
 public class HabitCompletion {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_completions_seq")
-    @SequenceGenerator(name = "habit_completions_seq", sequenceName = "habit_completions_sequence", allocationSize = 1)
     private Long id;
-    @Column(nullable = false)
     private LocalDate date;
-    @Column(nullable = false)
     private boolean completed;
 
-    @ManyToOne
-    @JoinColumn(name = "habit_id", nullable = false)
     private Habit habit;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public Habit getHabit() {
+        return habit;
+    }
+
+    public void setHabit(Habit habit) {
+        this.habit = habit;
+    }
 }

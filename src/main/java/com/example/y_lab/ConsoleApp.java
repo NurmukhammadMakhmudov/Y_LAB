@@ -1,11 +1,8 @@
 package com.example.y_lab;
 
-import com.example.y_lab.models.Habit;
 import com.example.y_lab.models.User;
-import com.example.y_lab.repositories.HabitRepository;
 import com.example.y_lab.services.AuthenticationService;
 import com.example.y_lab.services.HabitService;
-import com.example.y_lab.services.HabitTrackingService;
 import com.example.y_lab.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -16,17 +13,12 @@ import java.util.Scanner;
 
 @Component
 public class ConsoleApp implements CommandLineRunner {
+    private final UserService userService = new UserService();
+    private final AuthenticationService authenticationService = new AuthenticationService(userService);
+    private final HabitService habitService = new HabitService();
 
-    private final AuthenticationService authenticationService;
-    private final HabitService habitService;
-    private final UserService userService;
 
-    @Autowired
-    public ConsoleApp(AuthenticationService authenticationService, HabitService habitService, UserService userService) {
-        this.authenticationService = authenticationService;
-        this.habitService = habitService;
-        this.userService = userService;
-    }
+
 
     @Override
     public void run(String... args) {
@@ -91,7 +83,7 @@ public class ConsoleApp implements CommandLineRunner {
                 case 12 -> userService.blockUser();
                 case 13 -> userService.deleteUserAsAdmin();
                 case 14 -> {
-                    return; // Logout
+                    return;
                 }
                 default -> System.out.println("Invalid choice. Please try again.");
             }

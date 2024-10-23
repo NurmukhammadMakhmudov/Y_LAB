@@ -3,8 +3,8 @@ package com.example.y_lab.services;
 import com.example.y_lab.models.Habit;
 import com.example.y_lab.models.HabitCompletion;
 import com.example.y_lab.models.User;
-import com.example.y_lab.repositories.HabitCompletionRepository;
-import com.example.y_lab.repositories.HabitRepository;
+import com.example.y_lab.repositories.HabitCompletionRepo;
+import com.example.y_lab.repositories.HabitRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,13 +16,10 @@ import java.util.stream.Collectors;
 @Service
 public class HabitTrackingService {
 
-    private final HabitCompletionRepository habitCompletionRepository;
-    private final HabitRepository habitRepository;
+    private final ConnectionService connectionService = new ConnectionService();
+    private final HabitRepo habitRepo = new HabitRepo(connectionService);
+    private final HabitCompletionRepo habitCompletionRepo = new HabitCompletionRepo(connectionService);
 
-    public HabitTrackingService(HabitCompletionRepository habitCompletionRepository, HabitRepository habitRepository) {
-        this.habitCompletionRepository = habitCompletionRepository;
-        this.habitRepository = habitRepository;
-    }
 
 
     public void markHabitCompletion(Habit habit, LocalDate date, boolean completed) {
@@ -30,12 +27,12 @@ public class HabitTrackingService {
         completion.setCompleted(completed);
         completion.setDate(date);
         completion.setHabit(habit);
-        habitCompletionRepository.save(completion);
+        habitCompletionRepo.save(completion);
     }
 
     public Map<Habit, Long> getHabitStatistics(User user, String period) {
         LocalDate now = LocalDate.now();
-        List<Habit> habits = habitRepository.findByUser(user);
+        List<Habit> habits = habitRepo.findByUser(user);
         return habits.stream().collect(Collectors.toMap(
                 habit -> habit,
                 habit -> {
@@ -50,20 +47,12 @@ public class HabitTrackingService {
     }
 
     private LocalDate calculateStartDate(LocalDate now, String period, LocalDate createdDate) {
-        LocalDate startDate;
-        switch (period.toLowerCase()) {
-            case "day":
-                startDate = now;
-                break;
-            case "week":
-                startDate = now.minusWeeks(1);
-                break;
-            case "month":
-                startDate = now.minusMonths(1);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid period. Choose 'day', 'week', or 'month'.");
-        }
+        LocalDate startDate = switch (period.toLowerCase()) {
+            case "day" -> now;
+            case "week" -> now.minusWeeks(1);
+            case "month" -> now.minusMonths(1);
+            default -> throw new IllegalArgumentException("Invalid period. Choose 'day', 'week', or 'month'.");
+        };
         if (createdDate.isAfter(startDate)) {
             startDate = createdDate;
         }
@@ -73,8 +62,7 @@ public class HabitTrackingService {
     public long calculateStreak(Habit habit) {
         List<HabitCompletion> completions = habit.getCompletions().stream()
                 .filter(HabitCompletion::isCompleted)
-                .sorted(Comparator.comparing(HabitCompletion::getDate).reversed())
-                .collect(Collectors.toList());
+                .sorted(Comparator.comparing(HabitCompletion::getDate).reversed()).toList();
 
         if (completions.isEmpty()) {
             return 0;

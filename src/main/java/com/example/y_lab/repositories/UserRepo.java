@@ -12,9 +12,10 @@ public class UserRepo implements UserRepositoryInterface {
 
     private final ConnectionService connectionService;
 
-    public UserRepo()  {
-        this.connectionService =  new ConnectionService();;
+    public UserRepo(ConnectionService connectionService) {
+        this.connectionService = connectionService;
     }
+
 
     @Override
     public  void save(User user)
@@ -56,7 +57,7 @@ public class UserRepo implements UserRepositoryInterface {
 
         final String sqlSelect = "Select * from users where id = ?";
         try (Connection connection = connectionService.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sqlSelect);)
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlSelect))
         {
             preparedStatement.setLong(1, id);
             return getUser(preparedStatement);

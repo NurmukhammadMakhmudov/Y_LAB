@@ -3,13 +3,11 @@ package com.example.y_lab.services;
 import com.example.y_lab.models.Habit;
 import com.example.y_lab.models.User;
 import com.example.y_lab.repositories.HabitRepo;
-import com.example.y_lab.repositories.HabitRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Scanner;
 
 
@@ -20,11 +18,9 @@ public class HabitService {
 
     private final ConnectionService connectionService = new ConnectionService();
     private final HabitRepo habitRepo = new HabitRepo(connectionService);
-    private final HabitTrackingService habitTrackingService;
+    private final HabitTrackingService habitTrackingService = new HabitTrackingService();
 
-    public HabitService(HabitTrackingService habitTrackingService) {
-        this.habitTrackingService = habitTrackingService;
-    }
+
 
     public void createHabit(User user) {
         Habit habit = new Habit();

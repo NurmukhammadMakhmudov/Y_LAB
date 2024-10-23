@@ -8,36 +8,78 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@Entity
-@Table(name = "habits", schema = "ylab_schema")
+
+
 public class Habit {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_seq")
-    @SequenceGenerator(name = "habit_seq", sequenceName = "habit_sequence", allocationSize = 1)
+
     private Long id;
-    @Column(name = "creation_date", nullable = false)
     private LocalDate creationDate;
-    @Column(nullable = false)
     private String title;
-    @Column(nullable = false)
     private String description;
-    @Column(nullable = false)
     private String frequency;
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @ToString.Exclude
     private List<HabitCompletion> completions;
 
     public void addCompletion(HabitCompletion completion) {
         completions.add(completion);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<HabitCompletion> getCompletions() {
+        return completions;
+    }
+
+    public void setCompletions(List<HabitCompletion> completions) {
+        this.completions = completions;
     }
 
     @Override

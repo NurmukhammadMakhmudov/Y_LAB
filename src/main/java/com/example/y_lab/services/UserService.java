@@ -1,7 +1,7 @@
 package com.example.y_lab.services;
 
 import com.example.y_lab.models.User;
-import com.example.y_lab.repositories.HabitRepository;
+import com.example.y_lab.repositories.HabitRepo;
 import com.example.y_lab.repositories.UserRepo;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +10,9 @@ import java.util.*;
 @Service
 public class UserService {
 
-    private final UserRepo userRepo = new UserRepo();
+    private final ConnectionService connectionService  = new ConnectionService();
+    private final UserRepo userRepo = new UserRepo(connectionService);
+    private final HabitRepo habitRepo = new HabitRepo(connectionService);
 
 
 
@@ -62,7 +64,7 @@ public class UserService {
         user.setName(name);
         user.setEmail(email);
         user.setPassword(password);
-        userRepo.save(user);
+        userRepo.update(user);
 
     }
 
@@ -84,9 +86,9 @@ public class UserService {
         List<User> users = getAllUsers();
         users.forEach(user -> {
             System.out.println("User: " + user.getEmail() + " - " + user.getName());
-//            habitRepository.findByUser(user).forEach(habit -> {
-//                System.out.println("  Habit: " + habit.getTitle() + " - " + habit.getFrequency());
-//            });
+            habitRepo.findByUser(user).forEach(habit -> {
+                System.out.println("  Habit: " + habit.getTitle() + " - " + habit.getFrequency());
+            });
         });
     }
 
@@ -97,7 +99,7 @@ public class UserService {
         if (userRepo.findByEmail(email) != null) {
             User user = userRepo.findByEmail(email);
             user.setBlocked(true);
-            userRepo.save(user);
+            userRepo.update(user);
             System.out.println("User " + email + " has been blocked.");
         } else {
             System.out.println("User not found.");
