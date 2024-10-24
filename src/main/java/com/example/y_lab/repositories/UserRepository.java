@@ -8,11 +8,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserRepo implements UserRepositoryInterface {
+public class UserRepository implements UserRepositoryInterface {
 
     private final ConnectionService connectionService;
 
-    public UserRepo(ConnectionService connectionService) {
+    public UserRepository(ConnectionService connectionService) {
         this.connectionService = connectionService;
     }
 
@@ -120,10 +120,10 @@ public class UserRepo implements UserRepositoryInterface {
                 user.setId(resultSet.getLong("id"));
                 userList.add(user);
             }
-            return userList;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return userList;
 
     }
 

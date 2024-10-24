@@ -2,9 +2,10 @@ package com.example.y_lab.services;
 
 import com.example.y_lab.models.Habit;
 import com.example.y_lab.models.User;
-import com.example.y_lab.repositories.HabitRepo;
+import com.example.y_lab.repositories.HabitRepository;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,9 @@ public class HabitService {
     private final Scanner scanner = new Scanner(System.in);
 
     private final ConnectionService connectionService = new ConnectionService();
-    private final HabitRepo habitRepo = new HabitRepo(connectionService);
+    private final HabitRepository habitRepository = new HabitRepository(connectionService);
     private final HabitTrackingService habitTrackingService = new HabitTrackingService();
+
 
 
 
@@ -32,14 +34,14 @@ public class HabitService {
         habit.setFrequency(scanner.nextLine());
         habit.setUser(user);
         habit.setCreationDate(LocalDate.now());
-        habitRepo.save(habit);
+        habitRepository.save(habit);
         System.out.println("Habit created.");
     }
 
     public void viewHabits(User user) {
         System.out.println("Filter by frequency (daily/weekly) or press Enter to see all: ");
         String filter = scanner.nextLine().toLowerCase();
-        List<Habit> list = habitRepo.findByUser(user);
+        List<Habit> list = habitRepository.findByUser(user);
         list.stream()
                 .filter(habit -> filter.isEmpty() || habit.getFrequency().toLowerCase().equals(filter))
                 .forEach(habit -> System.out.println(habit.getId() + ". " + habit.getTitle() + " (" + habit.getFrequency() + ")"));
@@ -50,7 +52,7 @@ public class HabitService {
         long id = scanner.nextInt();
         scanner.nextLine();
 
-         Habit habit = habitRepo.findById(id);
+         Habit habit = habitRepository.findById(id);
         if (habit != null) {
             System.out.println("Title: " + habit.getTitle());
             System.out.println("Description: " + habit.getDescription());
@@ -67,7 +69,7 @@ public class HabitService {
         System.out.print("Enter habit ID to edit: ");
         long id = scanner.nextLong();
         scanner.nextLine();
-        Habit habit = habitRepo.findById(id);
+        Habit habit = habitRepository.findById(id);
         if (habit != null) {
             habit.setUser(user);
             System.out.print("New Title: ");
@@ -76,7 +78,7 @@ public class HabitService {
             habit.setDescription(scanner.nextLine());
             System.out.print("New Frequency (daily/weekly): ");
             habit.setFrequency(scanner.nextLine());
-            habitRepo.update(habit);
+            habitRepository.update(habit);
             System.out.println("Habit updated.");
         } else {
             System.out.println("Habit not found.");
@@ -87,9 +89,9 @@ public class HabitService {
         viewHabits(user);
         System.out.print("Enter habit ID to delete: ");
         long id = scanner.nextLong();
-        Habit habit = habitRepo.findById(id);
+        Habit habit = habitRepository.findById(id);
         if (habit != null) {
-            habitRepo.delete(habit.getId());
+            habitRepository.delete(habit.getId());
             System.out.println("Habit deleted.");
         } else {
             System.out.println("Habit not found.");
@@ -101,7 +103,7 @@ public class HabitService {
         System.out.print("Enter habit ID to mark completion: ");
         long id = scanner.nextLong();
         scanner.nextLine();
-        Habit habit = habitRepo.findById(id);
+        Habit habit = habitRepository.findById(id);
         if (habit != null) {
             System.out.print("Completion date (YYYY-MM-DD): ");
             LocalDate date = LocalDate.parse(scanner.nextLine());
@@ -132,7 +134,7 @@ public class HabitService {
         System.out.print("Enter habit ID to mark completion: ");
         long id = scanner.nextLong();
         scanner.nextLine();
-        Habit habit = habitRepo.findById(id);
+        Habit habit = habitRepository.findById(id);
 
 
         if (habit != null) {

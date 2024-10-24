@@ -4,18 +4,17 @@ import com.example.y_lab.RepositoriesInterfaces.HabitCompletionRepositoryInterfa
 import com.example.y_lab.models.HabitCompletion;
 import com.example.y_lab.services.ConnectionService;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-public class HabitCompletionRepo implements HabitCompletionRepositoryInterface {
+public class HabitCompletionRepository implements HabitCompletionRepositoryInterface {
 
     private final ConnectionService connectionService;
 
-    public HabitCompletionRepo(ConnectionService connectionService) {
+    public HabitCompletionRepository(ConnectionService connectionService) {
         this.connectionService = connectionService;
     }
 

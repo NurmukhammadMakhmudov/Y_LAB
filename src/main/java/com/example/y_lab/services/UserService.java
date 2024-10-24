@@ -1,37 +1,37 @@
 package com.example.y_lab.services;
 
 import com.example.y_lab.models.User;
-import com.example.y_lab.repositories.HabitRepo;
-import com.example.y_lab.repositories.UserRepo;
+import com.example.y_lab.repositories.HabitRepository;
+import com.example.y_lab.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.*;
 
 @Service
 public class UserService {
 
     private final ConnectionService connectionService  = new ConnectionService();
-    private final UserRepo userRepo = new UserRepo(connectionService);
-    private final HabitRepo habitRepo = new HabitRepo(connectionService);
-
+    private final UserRepository userRepository = new UserRepository(connectionService);
+    private final HabitRepository habitRepository = new HabitRepository(connectionService);
 
 
 
     public void registerUser(String email, String password, String name) {
-        User user1 = userRepo.findByEmail(email);
+        User user1 = userRepository.findByEmail(email);
         if (user1 == null) {
             User user = new User();
             user.setEmail(email);
             user.setPassword(password);
             user.setName(name);
-            userRepo.save(user);
+            userRepository.save(user);
         }
         else
             throw new IllegalArgumentException("Email is already taken.");
     }
 
     public User login(String email, String password) {
-        User user = userRepo.findByEmail(email);
+        User user = userRepository.findByEmail(email);
         if (user.getPassword().equals(password) )
             if (!user.isBlocked())
                 return user;
@@ -42,7 +42,7 @@ public class UserService {
 
 
     public List<User> getAllUsers() {
-        return userRepo.findAll();
+        return userRepository.findAll();
     }
 
 
@@ -64,7 +64,7 @@ public class UserService {
         user.setName(name);
         user.setEmail(email);
         user.setPassword(password);
-        userRepo.update(user);
+        userRepository.update(user);
 
     }
 
@@ -74,7 +74,7 @@ public class UserService {
         Scanner scanner = new Scanner(System.in);
         String confirmation = scanner.nextLine();
         if (confirmation.equalsIgnoreCase("yes")) {
-            userRepo.delete(user.getId());
+            userRepository.delete(user.getId());
             System.out.println("Account deleted.");
             System.exit(0);
         } else {
@@ -86,7 +86,7 @@ public class UserService {
         List<User> users = getAllUsers();
         users.forEach(user -> {
             System.out.println("User: " + user.getEmail() + " - " + user.getName());
-            habitRepo.findByUser(user).forEach(habit -> {
+            habitRepository.findByUser(user).forEach(habit -> {
                 System.out.println("  Habit: " + habit.getTitle() + " - " + habit.getFrequency());
             });
         });
@@ -96,10 +96,10 @@ public class UserService {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter user email to block: ");
         String email = scanner.nextLine();
-        if (userRepo.findByEmail(email) != null) {
-            User user = userRepo.findByEmail(email);
+        if (userRepository.findByEmail(email) != null) {
+            User user = userRepository.findByEmail(email);
             user.setBlocked(true);
-            userRepo.update(user);
+            userRepository.update(user);
             System.out.println("User " + email + " has been blocked.");
         } else {
             System.out.println("User not found.");
@@ -110,10 +110,10 @@ public class UserService {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter user email to delete: ");
         String email = scanner.nextLine();
-        User user = userRepo.findByEmail(email);
+        User user = userRepository.findByEmail(email);
         if (user != null)
         {
-            userRepo.delete(user.getId());
+            userRepository.delete(user.getId());
             System.out.println("User " + email + " has been deleted.");
         }
         else

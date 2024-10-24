@@ -3,10 +3,11 @@ package com.example.y_lab.services;
 import com.example.y_lab.models.Habit;
 import com.example.y_lab.models.HabitCompletion;
 import com.example.y_lab.models.User;
-import com.example.y_lab.repositories.HabitCompletionRepo;
-import com.example.y_lab.repositories.HabitRepo;
+import com.example.y_lab.repositories.HabitCompletionRepository;
+import com.example.y_lab.repositories.HabitRepository;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -17,8 +18,9 @@ import java.util.stream.Collectors;
 public class HabitTrackingService {
 
     private final ConnectionService connectionService = new ConnectionService();
-    private final HabitRepo habitRepo = new HabitRepo(connectionService);
-    private final HabitCompletionRepo habitCompletionRepo = new HabitCompletionRepo(connectionService);
+    private final HabitRepository habitRepository = new HabitRepository(connectionService);
+    private final HabitCompletionRepository habitCompletionRepository = new HabitCompletionRepository(connectionService);
+
 
 
 
@@ -27,12 +29,12 @@ public class HabitTrackingService {
         completion.setCompleted(completed);
         completion.setDate(date);
         completion.setHabit(habit);
-        habitCompletionRepo.save(completion);
+        habitCompletionRepository.save(completion);
     }
 
     public Map<Habit, Long> getHabitStatistics(User user, String period) {
         LocalDate now = LocalDate.now();
-        List<Habit> habits = habitRepo.findByUser(user);
+        List<Habit> habits = habitRepository.findByUser(user);
         return habits.stream().collect(Collectors.toMap(
                 habit -> habit,
                 habit -> {

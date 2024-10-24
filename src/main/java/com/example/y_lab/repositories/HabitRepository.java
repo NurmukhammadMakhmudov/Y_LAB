@@ -10,11 +10,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HabitRepo implements HabitRepositoryInterface {
+public class HabitRepository implements HabitRepositoryInterface {
 
     private final ConnectionService connectionService;
 
-    public HabitRepo(ConnectionService connectionService) {
+    public HabitRepository(ConnectionService connectionService) {
         this.connectionService = connectionService;
     }
 
