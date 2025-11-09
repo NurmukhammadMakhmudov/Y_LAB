@@ -1,6 +1,7 @@
 package main.java.ru.ylab.model;
 
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,12 +10,13 @@ import java.util.Map;
 
 
 public class AppData implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     // Все данные приложения
-    private Map<Integer, Product> products;
-    private Map<String, User> users;
-    private List<AuditRecord> auditRecords;
+    private final Map<Integer, Product> products;
+    private final Map<String, User> users;
+    private final List<AuditRecord> auditRecords;
     private int nextProductId;
 
     public AppData() {

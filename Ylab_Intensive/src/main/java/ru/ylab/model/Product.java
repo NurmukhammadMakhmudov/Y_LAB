@@ -59,18 +59,8 @@ public class Product implements Serializable {
         return price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
-        setModifiedDate();
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-        setModifiedDate();
     }
 
     public LocalDateTime getCreatedDate() {

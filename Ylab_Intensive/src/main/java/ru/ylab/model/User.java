@@ -16,9 +16,6 @@ public class User implements Serializable {
         this.passwordHash = passwordHash;
     }
 
-    public String getUsername() {
-        return username;
-    }
     public String getPasswordHash() {
         return passwordHash;
     }

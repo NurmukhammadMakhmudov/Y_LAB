@@ -4,7 +4,6 @@ import main.java.ru.ylab.model.AppData;
 import main.java.ru.ylab.model.Product;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class ProductRepository {
     private final Map<Integer, Product> products; // основное хранилище

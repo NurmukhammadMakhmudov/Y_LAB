@@ -48,12 +48,10 @@ public class Main {
 
         // Запуск консольного меню
         Scanner scanner = new Scanner(System.in);
-        ConsoleMenu menu = new ConsoleMenu(catalogService, userService, auditService, scanner, cacheService);
 
-        try {
+        try (scanner) {
+            ConsoleMenu menu = new ConsoleMenu(catalogService, userService, auditService, scanner, cacheService);
             menu.start();
-        } finally {
-            scanner.close();
         }
 
         System.out.println("\nСпасибо за использование системы! До свидания!");
