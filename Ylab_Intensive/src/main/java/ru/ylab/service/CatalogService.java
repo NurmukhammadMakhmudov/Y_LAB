@@ -1,7 +1,8 @@
-package main.java.ru.ylab.service;
+package ru.ylab.service;
 
-import main.java.ru.ylab.model.Product;
+import ru.ylab.model.Product;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ import java.util.Optional;
  * @see Product
  * @see CacheService
  * @see AuditService
- * @author Ваше Имя
+ * @author Makhmudov Nurmukhammad
  * @version 1.0
  * @since 2025-11-09
  */
@@ -82,7 +83,7 @@ public interface CatalogService {
      * @see #deleteProduct(int)
      */
     Product addProduct(String name, String category, String brand,
-                       double price, String description);
+                       BigDecimal price, String description);
 
     /**
      * Возвращает все товары из каталога.
@@ -134,7 +135,7 @@ public interface CatalogService {
      * @see #addProduct(String, String, String, double, String)
      */
     boolean updateProduct(int id, String name, String category, String brand,
-                          double price, String description);
+                          BigDecimal price, String description);
 
     /**
      * Удаляет товар из каталога.
@@ -212,7 +213,7 @@ public interface CatalogService {
      * @return список товаров в указанном ценовом диапазоне (может быть пустым, но никогда {@code null})
      * @throws IllegalArgumentException если {@code minPrice > maxPrice} или цены отрицательные
      */
-    List<Product> filterByPriceRange(double minPrice, double maxPrice);
+    List<Product> filterByPriceRange(BigDecimal minPrice, BigDecimal maxPrice);
 
     /**
      * Возвращает общее количество товаров в каталоге.

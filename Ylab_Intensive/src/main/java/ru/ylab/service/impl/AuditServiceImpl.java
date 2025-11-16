@@ -1,61 +1,56 @@
-package main.java.ru.ylab.service.impl;
+package ru.ylab.service.impl;
 
-import main.java.ru.ylab.model.AppData;
-import main.java.ru.ylab.model.AuditRecord;
-import main.java.ru.ylab.model.enums.Action;
-import main.java.ru.ylab.service.AuditService;
+import ru.ylab.model.AuditRecord;
+import ru.ylab.model.enums.Action;
+import ru.ylab.repository.AuditRepository;
+import ru.ylab.service.AuditService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Implementation of AuditService using database storage
+ */
 public class AuditServiceImpl implements AuditService {
+    private final AuditRepository auditRepository;
 
-    private final List<AuditRecord> records;
-
-    public AuditServiceImpl(AppData appData) {
-        this.records = appData.getAuditRecords();
+    public AuditServiceImpl(AuditRepository auditRepository) {
+        this.auditRepository = auditRepository;
     }
 
     @Override
     public void log(String username, Action action, String details) {
-        AuditRecord record = new AuditRecord(
-                username,
-                action,
-                details
-        );
-        records.add(record);
+        auditRepository.create(username, action, details);
     }
 
     @Override
     public List<AuditRecord> getAllRecords() {
-        return new ArrayList<>(records);
+        return auditRepository.findAll();
     }
 
     @Override
     public List<AuditRecord> getRecordsByUser(String username) {
-        return records.stream()
-                .filter(r -> r.getUsername().equals(username))
-                .collect(Collectors.toList());
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+        return auditRepository.findByUsername(username);
     }
 
     @Override
     public List<AuditRecord> getRecordsByAction(String action) {
-        return records.stream()
-                .filter(r -> r.getAction().equals(Action.valueOf(action)))
-                .collect(Collectors.toList());
+        return auditRepository.findByAction(action);
     }
 
     @Override
     public List<AuditRecord> getRecordsAfter(LocalDateTime dateTime) {
-        return records.stream()
-                .filter(r -> r.getTimestamp().isAfter(dateTime))
-                .collect(Collectors.toList());
+        if (dateTime == null) {
+            throw new IllegalArgumentException("DateTime cannot be null");
+        }
+        return auditRepository.findAfterTimestamp(dateTime);
     }
 
     @Override
     public int getRecordCount() {
-        return records.size();
+        return auditRepository.count();
     }
 }

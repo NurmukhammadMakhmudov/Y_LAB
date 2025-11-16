@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-users-table
+      author: MakhmudovN
+      changes:
+        - sql:
+            sql: "CREATE SEQUENCE IF NOT EXISTS catalog.user_id_seq START 1 INCREMENT 1;"
+
+        - sql:
+            sql: |
+              CREATE TABLE IF NOT EXISTS catalog.users (
+                id BIGINT DEFAULT nextval('catalog.user_id_seq'::regclass) PRIMARY KEY,
+                username VARCHAR(100) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL
+              );
+            comment: "Users table with id, username, password, created_at"
+
+        - sql:
+            sql: "CREATE INDEX IF NOT EXISTS idx_users_username ON catalog.users(username);"
+
+  - changeSet:
+      id: 002-create-products-table
+      author: MakhmudovN
+      changes:
+        - sql:
+            sql: "CREATE SEQUENCE IF NOT EXISTS catalog.product_id_seq START 1 INCREMENT 1;"
+
+        - sql:
+            sql: |
+              CREATE TABLE IF NOT EXISTS catalog.products (
+                id INTEGER DEFAULT nextval('catalog.product_id_seq'::regclass) PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                category VARCHAR(100),
+                brand VARCHAR(100),
+                price NUMERIC(10, 2) NOT NULL,
+                description TEXT,
+                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,
+                updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL
+              );
+            comment: "Products table with id, name, category, brand, price, description, timestamps"
+
+        - sql:
+            sql: "CREATE INDEX IF NOT EXISTS idx_products_category ON catalog.products(category);"
+
+        - sql:
+            sql: "CREATE INDEX IF NOT EXISTS idx_products_brand ON catalog.products(brand);"
+
+        - sql:
+            sql: "CREATE INDEX IF NOT EXISTS idx_products_price ON catalog.products(price);"
+
+  - changeSet:
+      id: 002-create-audit-records-table
+      author: MakhmudovN
+      changes:
+        - sql:
+            sql: "CREATE SEQUENCE IF NOT EXISTS audit.audit_record_id_seq START 1 INCREMENT 1;"
+
+        - sql:
+            sql: |
+              CREATE TABLE IF NOT EXISTS audit.audit_records (
+                id BIGINT DEFAULT nextval('audit.audit_record_id_seq'::regclass) PRIMARY KEY,
+                username VARCHAR(100) NOT NULL,
+                action VARCHAR(50) NOT NULL,
+                details TEXT,
+                timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL
+              );
+            comment: "Audit records table with id, username, action, details, timestamp"
+
+        - sql:
+            sql: "CREATE INDEX IF NOT EXISTS idx_audit_username ON audit.audit_records(username);"
+
+        - sql:
+            sql: "CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit.audit_records(timestamp);"
+
+        - sql:
+            sql: "CREATE INDEX IF NOT EXISTS idx_audit_action ON audit.audit_records(action);"

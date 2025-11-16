@@ -1,8 +1,10 @@
-package main.java.ru.ylab.service.impl;
+package ru.ylab.service.impl;
 
-import main.java.ru.ylab.model.CacheEntry;
-import main.java.ru.ylab.model.Product;
-import main.java.ru.ylab.service.CacheService;
+
+
+import ru.ylab.model.CacheEntry;
+import ru.ylab.model.Product;
+import ru.ylab.service.CacheService;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,8 +13,8 @@ import java.util.Map;
 public class CacheServiceImpl implements CacheService {
 
     private final Map<String, CacheEntry> cache;
-    private final long ttlMillis; // время жизни кэша
-    private final int maxSize; // максимальный размер кэша
+    private final long ttlMillis;
+    private final int maxSize;
 
     private int hits = 0;
     private int misses = 0;
@@ -65,15 +67,14 @@ public class CacheServiceImpl implements CacheService {
 
         hits++;
         totalQueryTimeNs += (System.nanoTime() - start);
-        return entry.data().stream().map(Product::copy).toList();
+        return entry.data();
     }
+
+
 
     @Override
     public void put(String key, List<Product> data) {
-        List<Product> copiedData = data.stream()
-                .map(Product::copy)
-                .toList();
-        cache.put(key, new CacheEntry(copiedData, System.currentTimeMillis()));
+        cache.put(key, new CacheEntry(data, System.currentTimeMillis()));
     }
 
     @Override

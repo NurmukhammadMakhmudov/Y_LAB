@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-schemas
+      author: MakhmudovN
+      changes:
+        - sql:
+            sql: CREATE SCHEMA IF NOT EXISTS catalog;
+            comment: "Create catalog schema for application entities"
+
+        - sql:
+            sql: CREATE SCHEMA IF NOT EXISTS audit;
+            comment: "Create audit schema for service tables"
+      
+      rollback:
+        - sql:
+            sql: DROP SCHEMA IF EXISTS audit CASCADE;
+        - sql:
+            sql: DROP SCHEMA IF EXISTS catalog CASCADE;
