@@ -60,10 +60,6 @@ public class User {
         this.password = password;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
 
     @Override
     public boolean equals(Object o) {

@@ -123,7 +123,7 @@ public class ConsoleMenu {
             case 7 -> showMetricsMenu();
             case 8 -> displayAuditHistory();
             case 9 -> {
-                System.out.println("До свидания, " + currentUser.get() + "!");
+                System.out.println("До свидания, " + currentUser.orElseThrow(()-> new IllegalArgumentException("Empty current user")) + "!");
                 currentUser = Optional.empty();
                 return true;
             }
@@ -177,8 +177,7 @@ public class ConsoleMenu {
         String username = scanner.nextLine().trim();
         System.out.print("Введите пароль: ");
         String password = scanner.nextLine();
-        Optional<User> user;
-        if ((user = userService.login(username, password)).isPresent()) {
+        if (userService.login(username, password).isPresent()) {
             currentUser = Optional.of(username);
             auditService.log(username, Action.LOGIN, "Пользователь вошел");
             System.out.println("Вход успешен!");
@@ -565,15 +564,16 @@ public class ConsoleMenu {
                 \n========================================
                                ДОБРО ПОЖАЛОВАТЬ
                              Product Catalog Service
-                ========================================\n
+                ========================================
+                
                 """);
     }
 
     private void printMainMenuHeader() {
         System.out.println("""
                 \n========================================
-                     ГЛАВНОЕ МЕНЮ (Пользователь: 
-                """ + currentUser.orElseThrow(()-> new IllegalArgumentException("Empty current user"))+ """ 
+                     ГЛАВНОЕ МЕНЮ (Пользователь:\s
+               \s""" + currentUser.orElseThrow(()-> new IllegalArgumentException("Empty current user"))+ """ 
                 )
                 "========================================\\n
                 """);

@@ -148,9 +148,6 @@ class AuditRepositoryImplTest {
     @DisplayName("Should find audit records after timestamp")
     void testFindAfterTimestamp() throws InterruptedException {
         // Given
-        LocalDateTime before = LocalDateTime.now().minusMinutes(1);
-        LocalDateTime recordTime = LocalDateTime.now();
-        
         repository.create("user1", Action.LOGIN, "Before time");
         Thread.sleep(100); // Небольшая задержка
         
@@ -163,7 +160,7 @@ class AuditRepositoryImplTest {
 
         // Then
         assertNotNull(records, "Список не должен быть null");
-        assertTrue(records.size() >= 1, "Должна быть минимум 1 запись после времени");
+        assertFalse(records.isEmpty(), "Должна быть минимум 1 запись после времени");
     }
 
     @Test
@@ -301,7 +298,7 @@ class AuditRepositoryImplTest {
             .toList();
 
         // Then
-        assertTrue(combined.size() >= 1, "Должна быть найдена целевая запись");
+        assertFalse(combined.isEmpty(), "Должна быть найдена целевая запись");
         assertTrue(combined.stream().allMatch(
             r -> r.getUsername().equals(targetUser) && r.getAction() == targetAction),
             "Все записи должны совпадать с фильтрами"

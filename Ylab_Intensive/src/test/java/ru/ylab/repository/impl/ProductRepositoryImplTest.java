@@ -278,7 +278,7 @@ class ProductRepositoryImplTest {
 
         // Then
         assertNotNull(found, "Список не должен быть null");
-        assertTrue(found.size() >= 1, "Должно быть минимум 1 товар в диапазоне цен");
+        assertFalse(found.isEmpty(), "Должно быть минимум 1 товар в диапазоне цен");
         assertTrue(found.stream().allMatch(
             p -> p.getPrice().compareTo(new BigDecimal("30.00")) >= 0 &&
                  p.getPrice().compareTo(new BigDecimal("80.00")) <= 0

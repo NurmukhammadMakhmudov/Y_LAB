@@ -258,7 +258,7 @@ class UserRepositoryImplTest {
         String password = "P@ssw0rd!#$%^&*()_+-=[]{}|;:',.<>?/`~";
 
         // When
-        User user = repository.create(username, password);
+        repository.create(username, password);
         Optional<User> found = repository.findByUsername(username);
 
         // Then

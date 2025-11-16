@@ -61,7 +61,7 @@ public interface UserService {
      * @throws IllegalArgumentException если логин пустой или {@code null}
      * @throws IllegalArgumentException если пароль меньше 4 символов
      * @throws IllegalArgumentException если пользователь с таким логином уже зарегистрирован
-     * @see #authenticate(String, String)
+     * @see #login(String, String)
      */
     boolean register(String username, String password);
 

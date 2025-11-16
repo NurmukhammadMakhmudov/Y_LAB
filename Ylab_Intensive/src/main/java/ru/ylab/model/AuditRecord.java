@@ -65,10 +65,6 @@ public class AuditRecord {
         this.action = action;
     }
 
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }

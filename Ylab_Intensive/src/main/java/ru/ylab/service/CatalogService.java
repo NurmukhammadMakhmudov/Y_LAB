@@ -79,7 +79,6 @@ public interface CatalogService {
      * @return добавленный товар с присвоенным ID (никогда не {@code null})
      * @throws IllegalArgumentException если название, категория или бренд пусты
      * @throws IllegalArgumentException если цена отрицательная
-     * @see #updateProduct(int, String, String, String, double, String)
      * @see #deleteProduct(int)
      */
     Product addProduct(String name, String category, String brand,
@@ -132,7 +131,6 @@ public interface CatalogService {
      * @param description новое описание (может быть {@code null})
      * @return {@code true} если товар успешно обновлён, {@code false} если товар не найден
      * @throws IllegalArgumentException если какое-либо поле невалидно
-     * @see #addProduct(String, String, String, double, String)
      */
     boolean updateProduct(int id, String name, String category, String brand,
                           BigDecimal price, String description);
@@ -149,7 +147,6 @@ public interface CatalogService {
      *
      * @param id идентификатор товара для удаления
      * @return {@code true} если товар успешно удалён, {@code false} если товар не найден
-     * @see #addProduct(String, String, String, double, String)
      */
     boolean deleteProduct(int id);
 

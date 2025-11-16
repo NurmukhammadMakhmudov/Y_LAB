@@ -13,7 +13,7 @@ public class LiquibaseConfig {
             DatabaseConfig.closeDataSource();
             try (Connection connection = DatabaseConfig.getConnection()) {
                 Liquibase liquibase = new Liquibase(
-                        "db/changelog/db.changelog-master.yaml",
+                        getPropertyFromFile("liquibase.changeLogFile"),
                         new ClassLoaderResourceAccessor(),
                         DatabaseFactory.getInstance()
                                 .findCorrectDatabaseImplementation(
@@ -30,6 +30,19 @@ public class LiquibaseConfig {
 
         } catch (Exception e) {
             throw new RuntimeException("Ошибка в runMigrations", e);
+        }
+    }
+
+    private static String getPropertyFromFile(String key) {
+        try (var input = DatabaseConfig.class.getClassLoader()
+                .getResourceAsStream("application.properties")) {
+            java.util.Properties props = new java.util.Properties();
+            if (input != null) {
+                props.load(input);
+            }
+            return props.getProperty(key);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load property: " + key, e);
         }
     }
 }
