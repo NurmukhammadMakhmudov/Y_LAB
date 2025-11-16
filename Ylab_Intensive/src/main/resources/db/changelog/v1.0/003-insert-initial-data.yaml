@@ -1,0 +1,200 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 003-insert-initial-users
+      author: MakhmudovN
+      changes:
+        - insert:
+            tableName: users
+            schemaName: catalog
+            columns:
+              - column:
+                  name: username
+                  value: "admin"
+              - column:
+                  name: password
+                  value: "admin123"
+
+        - insert:
+            tableName: users
+            schemaName: catalog
+            columns:
+              - column:
+                  name: username
+                  value: "user1"
+              - column:
+                  name: password
+                  value: "pass123"
+
+        - insert:
+            tableName: users
+            schemaName: catalog
+            columns:
+              - column:
+                  name: username
+                  value: "user2"
+              - column:
+                  name: password
+                  value: "password456"
+  - changeSet:
+      id: 003-insert-initial-products
+      author: MakhmudovN
+      changes:
+        - insert:
+            tableName: products
+            schemaName: catalog
+            columns:
+              - column:
+                  name: name
+                  value: "Laptop"
+              - column:
+                  name: category
+                  value: "Electronics"
+              - column:
+                  name: brand
+                  value: "TechBrand"
+              - column:
+                  name: price
+                  valueNumeric: 1299.99
+              - column:
+                  name: description
+                  value: "High-performance laptop with 16GB RAM"
+
+        - insert:
+            tableName: products
+            schemaName: catalog
+            columns:
+              - column:
+                  name: name
+                  value: "Wireless Mouse"
+              - column:
+                  name: category
+                  value: "Peripherals"
+              - column:
+                  name: brand
+                  value: "LogiTech"
+              - column:
+                  name: price
+                  valueNumeric: 29.99
+              - column:
+                  name: description
+                  value: "Ergonomic wireless mouse with USB receiver"
+
+        - insert:
+            tableName: products
+            schemaName: catalog
+            columns:
+              - column:
+                  name: name
+                  value: "Mechanical Keyboard"
+              - column:
+                  name: category
+                  value: "Peripherals"
+              - column:
+                  name: brand
+                  value: "Corsair"
+              - column:
+                  name: price
+                  valueNumeric: 89.99
+              - column:
+                  name: description
+                  value: "RGB mechanical keyboard with Cherry MX switches"
+
+        - insert:
+            tableName: products
+            schemaName: catalog
+            columns:
+              - column:
+                  name: name
+                  value: "4K Monitor"
+              - column:
+                  name: category
+                  value: "Displays"
+              - column:
+                  name: brand
+                  value: "LG"
+              - column:
+                  name: price
+                  valueNumeric: 349.99
+              - column:
+                  name: description
+                  value: "32-inch 4K UHD display with HDR support"
+
+        - insert:
+            tableName: products
+            schemaName: catalog
+            columns:
+              - column:
+                  name: name
+                  value: "USB-C Cable"
+              - column:
+                  name: category
+                  value: "Accessories"
+              - column:
+                  name: brand
+                  value: "Anker"
+              - column:
+                  name: price
+                  valueNumeric: 12.99
+              - column:
+                  name: description
+                  value: "3-meter USB-C to USB-C charging and data cable"
+  - changeSet:
+      id: 003-insert-initial-audit
+      author: MakhmudovN
+      changes:
+        - insert:
+            tableName: audit_records
+            schemaName: audit
+            columns:
+              - column:
+                  name: username
+                  value: "admin"
+              - column:
+                  name: action
+                  value: "LOGIN"
+              - column:
+                  name: details
+                  value: "Admin logged in to system"
+
+        - insert:
+            tableName: audit_records
+            schemaName: audit
+            columns:
+              - column:
+                  name: username
+                  value: "admin"
+              - column:
+                  name: action
+                  value: "ADD_PRODUCT"
+              - column:
+                  name: details
+                  value: "Added new product: Laptop"
+
+        - insert:
+            tableName: audit_records
+            schemaName: audit
+            columns:
+              - column:
+                  name: username
+                  value: "user1"
+              - column:
+                  name: action
+                  value: "LOGIN"
+              - column:
+                  name: details
+                  value: "User logged in to system"
+
+        - insert:
+            tableName: audit_records
+            schemaName: audit
+            columns:
+              - column:
+                  name: username
+                  value: "admin"
+              - column:
+                  name: action
+                  value: "LOGOUT"
+              - column:
+                  name: details
+                  value: "Admin logged out"

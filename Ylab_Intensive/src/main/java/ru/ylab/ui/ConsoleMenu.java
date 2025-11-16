@@ -1,14 +1,16 @@
-package main.java.ru.ylab.ui;
+package ru.ylab.ui;
 
 
-import main.java.ru.ylab.model.AuditRecord;
-import main.java.ru.ylab.model.Product;
-import main.java.ru.ylab.model.enums.Action;
-import main.java.ru.ylab.service.AuditService;
-import main.java.ru.ylab.service.CacheService;
-import main.java.ru.ylab.service.CatalogService;
-import main.java.ru.ylab.service.UserService;
+import ru.ylab.model.AuditRecord;
+import ru.ylab.model.Product;
+import ru.ylab.model.User;
+import ru.ylab.model.enums.Action;
+import ru.ylab.service.AuditService;
+import ru.ylab.service.CacheService;
+import ru.ylab.service.CatalogService;
+import ru.ylab.service.UserService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -32,7 +34,7 @@ public class ConsoleMenu {
     private final AuditService auditService;
     private final Scanner scanner;
     private final CacheService cacheService;
-    private String currentUser = null;
+    private Optional<String> currentUser;
 
     public ConsoleMenu(CatalogService catalogService, UserService userService,
                        AuditService auditService, Scanner scanner, CacheService cacheService) {
@@ -48,7 +50,7 @@ public class ConsoleMenu {
      */
     public void start() {
         while (true) {
-            if (currentUser == null) {
+            if (currentUser.isEmpty()) {
                 if (!showLoginMenu()) {
                     break;
                 }
@@ -91,15 +93,17 @@ public class ConsoleMenu {
     private boolean showMainMenu() {
         printMainMenuHeader();
 
-        System.out.println("1. Просмотр всех товаров");
-        System.out.println("2. Поиск товара");
-        System.out.println("3. Добавить товар");
-        System.out.println("4. Редактировать товар");
-        System.out.println("5. Удалить товар");
-        System.out.println("6. Фильтрация товаров");
-        System.out.println("7. Метрики приложения");
-        System.out.println("8. История действий");
-        System.out.println("9. Выход");
+        System.out.println("""
+                1. Просмотр всех товаров
+                2. Поиск товара
+                3. Добавить товар
+                4. Редактировать товар
+                5. Удалить товар
+                6. Фильтрация товаров
+                7. Метрики приложения
+                8. История действий
+                9. Выход
+                """);
 
         int choice = readInt("Выбор: ");
         return handleMainMenuChoice(choice);
@@ -119,8 +123,8 @@ public class ConsoleMenu {
             case 7 -> showMetricsMenu();
             case 8 -> displayAuditHistory();
             case 9 -> {
-                System.out.println("До свидания, " + currentUser + "!");
-                currentUser = null;
+                System.out.println("До свидания, " + currentUser.orElseThrow(()-> new IllegalArgumentException("Empty current user")) + "!");
+                currentUser = Optional.empty();
                 return true;
             }
             default -> System.out.println("Неверный выбор!");
@@ -132,11 +136,14 @@ public class ConsoleMenu {
      * Меню фильтрации товаров.
      */
     private void showFilterMenu() {
-        System.out.println("\n========== ФИЛЬТРАЦИЯ ==========");
-        System.out.println("1. По категории");
-        System.out.println("2. По бренду");
-        System.out.println("3. По цене");
-        System.out.println("0. Назад");
+
+        System.out.println("""
+                \n========== ФИЛЬТРАЦИЯ ==========
+                1. По категории
+                2. По бренду
+                3. По цене
+                0. Назад
+                """);
 
         int choice = readInt("Выбор: ");
 
@@ -170,9 +177,8 @@ public class ConsoleMenu {
         String username = scanner.nextLine().trim();
         System.out.print("Введите пароль: ");
         String password = scanner.nextLine();
-
-        if (userService.authenticate(username, password)) {
-            currentUser = username;
+        if (userService.login(username, password).isPresent()) {
+            currentUser = Optional.of(username);
             auditService.log(username, Action.LOGIN, "Пользователь вошел");
             System.out.println("Вход успешен!");
         } else {
@@ -191,7 +197,7 @@ public class ConsoleMenu {
 
         try {
             userService.register(username, password);
-            currentUser = username;
+            currentUser = Optional.of(username);
             auditService.log(username, Action.LOGIN, "Новый пользователь зарегистрирован");
             System.out.println("Регистрация успешна!");
         } catch (IllegalArgumentException e) {
@@ -211,7 +217,7 @@ public class ConsoleMenu {
             return;
         }
         printProductTable(products);
-        auditService.log(currentUser, Action.SEARCH, "Просмотр всех товаров. Результат: " + products.size() + " товаров");
+        auditService.log(currentUser.orElseThrow(() -> new IllegalArgumentException("Empty current user")), Action.SEARCH_PRODUCT, "Просмотр всех товаров. Результат: " + products.size() + " товаров");
     }
 
     /**
@@ -223,12 +229,12 @@ public class ConsoleMenu {
         String name = readString("Название: ");
         String category = readString("Категория: ");
         String brand = readString("Бренд: ");
-        double price = readDouble("Цена: ");
+        BigDecimal price = readBigDecimal("Цена: ");
         System.out.print("Описание: ");
         String description = scanner.nextLine().trim();
 
         try {
-            catalogService.setCurrentUser(currentUser);
+            catalogService.setCurrentUser(currentUser.orElseThrow(() -> new IllegalArgumentException("Empty current user")));
             Product product = catalogService.addProduct(name, category, brand, price, description);
             System.out.println("Товар добавлен! ID: " + product.getId());
         } catch (IllegalArgumentException e) {
@@ -266,12 +272,12 @@ public class ConsoleMenu {
         System.out.print("Новый бренд: ");
         String brand = scanner.nextLine().trim();
 
-        double price = -1;
+        BigDecimal price = BigDecimal.valueOf(-1);
         System.out.print("Новая цена: ");
         String priceStr = scanner.nextLine().trim();
         if (!priceStr.isEmpty()) {
             try {
-                price = Double.parseDouble(priceStr);
+                price = BigDecimal.valueOf(Double.parseDouble(priceStr));
             } catch (NumberFormatException e) {
                 System.out.println("Неверная цена!");
                 return;
@@ -282,8 +288,8 @@ public class ConsoleMenu {
         String description = scanner.nextLine().trim();
 
         // Если хоть что-то заполнено — обновляем
-        if (!name.isEmpty() || !category.isEmpty() || !brand.isEmpty() || price >= 0 || !description.isEmpty()) {
-            catalogService.setCurrentUser(currentUser);
+        if (!name.isEmpty() || !category.isEmpty() || !brand.isEmpty() || price.compareTo(BigDecimal.ZERO) >= 0 || !description.isEmpty()) {
+            catalogService.setCurrentUser(currentUser.orElseThrow(() -> new IllegalArgumentException("Empty current user")));
             boolean updated = catalogService.updateProduct(id, name, category, brand, price, description);
             if (updated) {
                 System.out.println("Товар обновлен!");
@@ -307,7 +313,7 @@ public class ConsoleMenu {
 
         printProductDetails(product.get());
         if (confirmAction()) {
-            catalogService.setCurrentUser(currentUser);
+            catalogService.setCurrentUser(currentUser.orElseThrow(() -> new IllegalArgumentException("Empty current user")));
             if (catalogService.deleteProduct(id)) {
                 System.out.println("Товар удален!");
             } else {
@@ -323,7 +329,7 @@ public class ConsoleMenu {
      */
     private void searchAndDisplayProducts() {
         String keyword = readString("Ключевое слово для поиска: ");
-        catalogService.setCurrentUser(currentUser);
+        catalogService.setCurrentUser(currentUser.orElseThrow(() -> new IllegalArgumentException("Empty current user")));
         List<Product> results = catalogService.searchByName(keyword);
 
         if (results.isEmpty()) {
@@ -332,7 +338,7 @@ public class ConsoleMenu {
             System.out.println("\nНайдено " + results.size() + " товаров:");
             printProductTable(results);
         }
-        auditService.log(currentUser, Action.SEARCH, "Поиск по ключевому слову: " + keyword + ". Результат: " + results.size());
+        auditService.log(currentUser.orElseThrow(() -> new IllegalArgumentException("Empty current user")), Action.SEARCH_PRODUCT, "Поиск по ключевому слову: " + keyword + ". Результат: " + results.size());
     }
 
     /**
@@ -348,7 +354,7 @@ public class ConsoleMenu {
         int idx = readInt("Выберите категорию: ") - 1;
         if (idx >= 0 && idx < categories.size()) {
             String category = categories.get(idx);
-            catalogService.setCurrentUser(currentUser);
+            catalogService.setCurrentUser(currentUser.orElseThrow(() -> new IllegalArgumentException("Empty current user")));
             List<Product> filtered = catalogService.filterByCategory(category);
 
             if (filtered.isEmpty()) {
@@ -375,7 +381,7 @@ public class ConsoleMenu {
         int idx = readInt("Выберите бренд: ") - 1;
         if (idx >= 0 && idx < brands.size()) {
             String brand = brands.get(idx);
-            catalogService.setCurrentUser(currentUser);
+            catalogService.setCurrentUser(currentUser.orElseThrow(() -> new IllegalArgumentException("Empty current user")));
             List<Product> filtered = catalogService.filterByBrand(brand);
 
             if (filtered.isEmpty()) {
@@ -393,10 +399,10 @@ public class ConsoleMenu {
      * Фильтр по цене.
      */
     private void filterProductsByPrice() {
-        double min = readDouble("Минимальная цена: ");
-        double max = readDouble("Максимальная цена: ");
+        BigDecimal min = readBigDecimal("Минимальная цена: ");
+        BigDecimal max = readBigDecimal("Максимальная цена: ");
 
-        catalogService.setCurrentUser(currentUser);
+        catalogService.setCurrentUser(currentUser.orElseThrow(() -> new IllegalArgumentException("Empty current user")));
         List<Product> filtered = catalogService.filterByPriceRange(min, max);
 
         if (filtered.isEmpty()) {
@@ -466,8 +472,7 @@ public class ConsoleMenu {
         System.out.println("Бренд: " + p.getBrand());
         System.out.println("Цена: " + String.format("%.2f", p.getPrice()));
         System.out.println("Описание: " + (p.getDescription() != null ? p.getDescription() : "---"));
-        System.out.println("Создан: " + p.getCreatedDate());
-        System.out.println("Изменен: " + p.getModifiedDate());
+        System.out.println("Создан: " + p.getCreatedAt());
     }
 
     /**
@@ -513,6 +518,21 @@ public class ConsoleMenu {
     }
 
     /**
+     * Чтение числа с точностью BigDecimal.
+     */
+    private BigDecimal readBigDecimal(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            try {
+                return BigDecimal.valueOf(Double.parseDouble(scanner.nextLine().trim()));
+            } catch (NumberFormatException e) {
+                System.out.println("Ошибка: введите числовое значение!");
+            }
+        }
+    }
+
+
+    /**
      * Чтение строки.
      */
     private String readString(String prompt) {
@@ -540,15 +560,22 @@ public class ConsoleMenu {
     // ==================== ПЕЧАТЬ ЗАГОЛОВКОВ ====================
 
     private void printLoginHeader() {
-        System.out.println("\n========================================");
-        System.out.println("        ДОБРО ПОЖАЛОВАТЬ");
-        System.out.println("    Product Catalog Service");
-        System.out.println("========================================\n");
+        System.out.println("""
+                \n========================================
+                               ДОБРО ПОЖАЛОВАТЬ
+                             Product Catalog Service
+                ========================================
+                
+                """);
     }
 
     private void printMainMenuHeader() {
-        System.out.println("\n========================================");
-        System.out.println("  ГЛАВНОЕ МЕНЮ (Пользователь: " + currentUser + ")");
-        System.out.println("========================================\n");
+        System.out.println("""
+                \n========================================
+                     ГЛАВНОЕ МЕНЮ (Пользователь:\s
+               \s""" + currentUser.orElseThrow(()-> new IllegalArgumentException("Empty current user"))+ """ 
+                )
+                "========================================\\n
+                """);
     }
 }

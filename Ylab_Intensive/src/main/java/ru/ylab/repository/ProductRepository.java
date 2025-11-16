@@ -1,161 +1,124 @@
-package main.java.ru.ylab.repository;
+package ru.ylab.repository;
 
-import main.java.ru.ylab.model.AppData;
-import main.java.ru.ylab.model.Product;
+import ru.ylab.model.Product;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
-public class ProductRepository {
-    private final Map<Integer, Product> products; // основное хранилище
-    private final Map<String, Set<Integer>> categoryIndex; // индекс по категориям
-    private final Map<String, Set<Integer>> brandIndex; // индекс по брендам
-    private final AppData appData;
-
-
-    public ProductRepository(AppData appData) {
-        this.appData = appData;
-        this.products = appData.getProducts();
-        this.categoryIndex = new  HashMap<>();
-        this.brandIndex = new  HashMap<>();
-
-        rebuildIndexes();
-    }
-
-    //CREATE
-
-    public Product add(Product product) {
-        int productId = appData.getNextProductId();
-        appData.setNextProductId(productId + 1);
-
-        Product newProduct = new Product(productId,
-                product.getName(),
-                product.getCategory(),
-                product.getBrand(),
-                product.getPrice(),
-                product.getDescription());
-        products.put(productId, newProduct);
-        addToIndexes(newProduct);
-        return newProduct;
-    }
-
-    // READ
-
-    public Optional<Product> findById(int id) {
-        return Optional.ofNullable(products.get(id));
-    }
-
-    public List<Product> findAll() {
-        return products.values().stream()
-                .toList();
-    }
-
-
-    // UPDATE
-
-    public boolean update(int id, Product updatedProduct) {
-        Product oldProduct = products.get(id);
-        if (oldProduct == null) {
-            return false;
-        }
-
-        removeFromIndexes(id, oldProduct);
-
-        Product update = new Product(id,
-                updatedProduct.getName(),
-                updatedProduct.getCategory(),
-                updatedProduct.getBrand(),
-                updatedProduct.getPrice(),
-                updatedProduct.getDescription());
-
-        products.put(id, update);
-
-        addToIndexes(update);
-
-        return true;
-    }
-
-    // DELETE
-
-    public boolean delete(int id) {
-        Product product = products.remove(id);
-        if (product == null) {
-            return false;
-        }
-        removeFromIndexes(id, product);
-
-        return true;
-    }
-
-    // SEARCH && FILTER
-
-    public List<Product> findByCategory(String category) {
-       Set<Integer> productSet = categoryIndex.getOrDefault(category, Collections.emptySet());
-
-        return productSet.stream().map(products::get).toList();
-    }
-
-    public List<Product> findByBrand(String brand) {
-        Set<Integer> productSet = brandIndex.getOrDefault(brand, Collections.emptySet());
-        return productSet.stream().map(products::get).toList();
-    }
-
-    public List<Product> searchByName(String keyword) {
-        return products.values().stream()
-                .filter(product -> product.getName().toLowerCase().contains(keyword.toLowerCase()))
-                .toList();
-    }
-
-    public List<Product> findByPriceRange(double lowerBound, double upperBound) {
-        return products.values().stream()
-                .filter(product ->  product.getPrice() >= lowerBound && product.getPrice() <= upperBound)
-                .toList();
-    }
-
-
-    // UTILITY
-
-    public int count() {
-        return products.size();
-    }
-
-    public Set<String> getAllCategories() {
-        return new HashSet<>(categoryIndex.keySet());
-    }
-
-    public Set<String> getAllBrands() {
-        return new HashSet<>(brandIndex.keySet());
-    }
-
-    private void addToIndexes(Product product) {
-        categoryIndex.computeIfAbsent(product.getCategory(), k -> new HashSet<>()).add(product.getId());
-        brandIndex.computeIfAbsent(product.getBrand(), k -> new HashSet<>()).add(product.getId());
-    }
-
-    private void removeFromIndexes(int id, Product product) {
-        Set<Integer> categoryIds = categoryIndex.get(product.getCategory());
-        if (categoryIds != null) {
-            categoryIds.remove(id);
-            if (categoryIds.isEmpty()) {
-                categoryIndex.remove(product.getCategory());
-            }
-        }
-
-        Set<Integer> brandIds = brandIndex.get(product.getBrand());
-        if (brandIds != null) {
-            brandIds.remove(id);
-            if (brandIds.isEmpty()) {
-                brandIndex.remove(product.getBrand());
-            }
-        }
-    }
+/**
+ * Интерфейс репозитория для работы с товарами
+ *
+ * Определяет все операции для работы с товарами в каталоге:
+ * - CRUD операции (создание, чтение, обновление, удаление)
+ * - Поиск по различным критериям
+ * - Фильтрацию по категориям, брендам, цене
+ * - Получение общей информации о каталоге
+ *
+ * Все операции выполняются через PostgreSQL с помощью JDBC.
+ * ID товаров генерируются автоматически с помощью SEQUENCE.
+ *
+ * @author Y.Lab
+ * @author Makhmudov Nurmukhammad
+ * @version 2.0
+ */
+public interface ProductRepository {
 
     /**
-     * Восстанавливает индексы из загруженных данных
+     * Добавить новый товар в каталог
+     * ID генерируется автоматически базой данных через SEQUENCE
+     *
+     * @param product Объект товара без ID (ID будет присвоен БД)
+     * @return Товар с назначенным ID
      */
-    private void rebuildIndexes() {
-        for (Product product : products.values()) {
-            addToIndexes(product);
-        }
-    }
+    Product add(Product product);
 
+    /**
+     * Найти товар по ID
+     *
+     * @param id Идентификатор товара
+     * @return Optional с товаром если найден, Optional.empty() если не найден
+     */
+    Optional<Product> findById(int id);
+
+    /**
+     * Получить все товары из каталога
+     *
+     * @return Список всех товаров, отсортированный по ID
+     */
+    List<Product> findAll();
+
+    /**
+     * Обновить информацию о товаре
+     *
+     * @param id ID товара для обновления
+     * @param updatedProduct Объект с новыми данными
+     * @return true если обновление успешно, false если товар не найден
+     */
+    boolean update(int id, Product updatedProduct);
+
+    /**
+     * Удалить товар из каталога
+     *
+     * @param id ID товара для удаления
+     * @return true если удаление успешно, false если товар не найден
+     */
+    boolean delete(int id);
+
+    /**
+     * Найти товары по категории
+     *
+     * @param category Название категории
+     * @return Список товаров данной категории
+     */
+    List<Product> findByCategory(String category);
+
+    /**
+     * Найти товары по бренду
+     *
+     * @param brand Название бренда
+     * @return Список товаров данного бренда
+     */
+    List<Product> findByBrand(String brand);
+
+    /**
+     * Поиск товаров по названию
+     * Поиск выполняется без учета регистра (case-insensitive)
+     * Использует частичное совпадение (LIKE в SQL)
+     *
+     * @param keyword Ключевое слово для поиска
+     * @return Список товаров с совпадающими названиями
+     */
+    List<Product> searchByName(String keyword);
+
+    /**
+     * Найти товары в диапазоне цен
+     *
+     * @param lowerBound Минимальная цена (включительно)
+     * @param upperBound Максимальная цена (включительно)
+     * @return Список товаров в указанном диапазоне цен
+     */
+    List<Product> findByPriceRange(BigDecimal lowerBound, BigDecimal upperBound);
+
+    /**
+     * Получить количество товаров в каталоге
+     *
+     * @return Общее количество товаров
+     */
+    int count();
+
+    /**
+     * Получить все уникальные категории в каталоге
+     *
+     * @return Набор (Set) названий всех категорий
+     */
+    Set<String> getAllCategories();
+
+    /**
+     * Получить все уникальные бренды в каталоге
+     *
+     * @return Набор (Set) названий всех брендов
+     */
+    Set<String> getAllBrands();
 }

@@ -1,12 +1,14 @@
-package main.java.ru.ylab.service.impl;
+package ru.ylab.service.impl;
 
-import main.java.ru.ylab.model.Product;
-import main.java.ru.ylab.model.enums.Action;
-import main.java.ru.ylab.repository.ProductRepository;
-import main.java.ru.ylab.service.AuditService;
-import main.java.ru.ylab.service.CacheService;
-import main.java.ru.ylab.service.CatalogService;
 
+import ru.ylab.model.Product;
+import ru.ylab.model.enums.Action;
+import ru.ylab.repository.ProductRepository;
+import ru.ylab.service.AuditService;
+import ru.ylab.service.CacheService;
+import ru.ylab.service.CatalogService;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,10 +31,9 @@ public class CatalogServiceImpl implements CatalogService {
 
 
     // CREATE
-
     @Override
     public Product addProduct(String name, String category, String brand,
-                              double price, String description) {
+                              BigDecimal price, String description) {
 
         validateProductData(name, category, brand, price);
 
@@ -43,14 +44,13 @@ public class CatalogServiceImpl implements CatalogService {
         cacheService.invalidateAll();
 
         // Аудит
-        auditService.log(currentUser, Action.ADD,
+        auditService.log(currentUser, Action.ADD_PRODUCT,
                 "Added product: " + added.getName() + " (ID: " + added.getId() + ")");
 
-        return added.copy();
+        return added;
     }
 
     // READ
-
     @Override
     public List<Product> getAllProducts() {
         String cacheKey = "all_products";
@@ -69,13 +69,13 @@ public class CatalogServiceImpl implements CatalogService {
     }
 
     public Optional<Product> getProductById(int id) {
-        return repository.findById(id).map(Product::copy);
+        return repository.findById(id);
     }
 
     // UPDATE
     @Override
     public boolean updateProduct(int id, String name, String category,
-                                 String brand, double price, String description) {
+                                 String brand, BigDecimal price, String description) {
         validateProductData(name, category, brand, price);
 
         Product updated = new Product(name, category, brand, price, description);
@@ -83,7 +83,7 @@ public class CatalogServiceImpl implements CatalogService {
 
         if (success) {
             cacheService.invalidateAll();
-            auditService.log(currentUser, Action.UPDATE,
+            auditService.log(currentUser, Action.UPDATE_PRODUCT,
                     "Updated product ID: " + id);
         }
 
@@ -102,7 +102,7 @@ public class CatalogServiceImpl implements CatalogService {
 
         if (success) {
             cacheService.invalidateAll();
-            auditService.log(currentUser, Action.DELETE,
+            auditService.log(currentUser, Action.DELETE_PRODUCT,
                     "Deleted product: " + product.get().getName() + " (ID: " + id + ")");
         }
 
@@ -122,8 +122,8 @@ public class CatalogServiceImpl implements CatalogService {
         List<Product> results = repository.searchByName(keyword);
         cacheService.put(cacheKey, results);
 
-        auditService.log(currentUser, Action.SEARCH, "Searched by name: " + keyword);
-        return results.stream().map(Product::copy).toList();
+        auditService.log(currentUser, Action.SEARCH_PRODUCT, "Searched by name: " + keyword);
+        return results;
     }
 
     @Override
@@ -138,7 +138,7 @@ public class CatalogServiceImpl implements CatalogService {
         List<Product> results = repository.findByCategory(category);
         cacheService.put(cacheKey, results);
 
-        return results.stream().map(Product::copy).toList();
+        return results;
     }
 
     @Override
@@ -153,11 +153,11 @@ public class CatalogServiceImpl implements CatalogService {
         List<Product> results = repository.findByBrand(brand);
         cacheService.put(cacheKey, results);
 
-        return results.stream().map(Product::copy).toList();
+        return results;
     }
 
     @Override
-    public List<Product> filterByPriceRange(double minPrice, double maxPrice) {
+    public List<Product> filterByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
         String cacheKey = String.format("filter_price_%.2f_%.2f", minPrice, maxPrice);
 
         List<Product> cached = cacheService.get(cacheKey);
@@ -168,7 +168,7 @@ public class CatalogServiceImpl implements CatalogService {
         List<Product> results = repository.findByPriceRange(minPrice, maxPrice);
         cacheService.put(cacheKey, results);
 
-        return results.stream().map(Product::copy).toList();
+        return results;
     }
 
     // METRICS
@@ -189,7 +189,7 @@ public class CatalogServiceImpl implements CatalogService {
 
     // VALIDATION
     private void validateProductData(String name, String category,
-                                     String brand, double price) {
+                                     String brand, BigDecimal price) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Product name cannot be empty");
         }
@@ -199,7 +199,7 @@ public class CatalogServiceImpl implements CatalogService {
         if (brand == null || brand.trim().isEmpty()) {
             throw new IllegalArgumentException("Brand cannot be empty");
         }
-        if (price < 0) {
+        if (price.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Price cannot be negative");
         }
     }

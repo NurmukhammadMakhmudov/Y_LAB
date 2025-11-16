@@ -1,12 +1,13 @@
-package main.java.ru.ylab.model.enums;
+package ru.ylab.model.enums;
 
 public enum Action {
-    ADD("Add Product"),
-    DELETE("Delete Product"),
-    SEARCH("Search product"),
-    UPDATE("Update Product"),
-    LOGIN("Login"),
-    LOGOUT("Logout");
+    ADD_PRODUCT("add product"),
+    DELETE_PRODUCT("delete product"),
+    SEARCH_PRODUCT("search product"),
+    UPDATE_PRODUCT("update product"),
+    LOGIN("login"),
+    LOGOUT("logout"),
+    REGISTER("register"),;
 
     private final String actionName;
 

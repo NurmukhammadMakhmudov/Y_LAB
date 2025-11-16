@@ -1,4 +1,9 @@
-package main.java.ru.ylab.service;
+package ru.ylab.service;
+
+import ru.ylab.model.User;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Сервис для управления пользователями маркетплейса.
@@ -34,7 +39,7 @@ package main.java.ru.ylab.service;
  * }</pre>
  * </p>
  *
- * @author Ваше Имя
+ * @author Makhmudov Nurmukhammad
  * @version 1.0
  * @since 2025-11-09
  */
@@ -56,9 +61,9 @@ public interface UserService {
      * @throws IllegalArgumentException если логин пустой или {@code null}
      * @throws IllegalArgumentException если пароль меньше 4 символов
      * @throws IllegalArgumentException если пользователь с таким логином уже зарегистрирован
-     * @see #authenticate(String, String)
+     * @see #login(String, String)
      */
-    void register(String username, String password);
+    boolean register(String username, String password);
 
     /**
      * Проверяет учётные данные пользователя.
@@ -72,5 +77,14 @@ public interface UserService {
      * @throws NullPointerException если username или password равны {@code null}
      * @see #register(String, String)
      */
-    boolean authenticate(String username, String password);
+
+    Optional<User> login(String username, String password);
+
+    boolean changePassword(String username, String oldPassword, String newPassword);
+
+    boolean userExists(String username);
+
+    List<User> getAllUsers();
+
+    void logout(String username);
 }

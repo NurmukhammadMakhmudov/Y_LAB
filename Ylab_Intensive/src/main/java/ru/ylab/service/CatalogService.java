@@ -1,7 +1,8 @@
-package main.java.ru.ylab.service;
+package ru.ylab.service;
 
-import main.java.ru.ylab.model.Product;
+import ru.ylab.model.Product;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ import java.util.Optional;
  * @see Product
  * @see CacheService
  * @see AuditService
- * @author Ваше Имя
+ * @author Makhmudov Nurmukhammad
  * @version 1.0
  * @since 2025-11-09
  */
@@ -78,11 +79,10 @@ public interface CatalogService {
      * @return добавленный товар с присвоенным ID (никогда не {@code null})
      * @throws IllegalArgumentException если название, категория или бренд пусты
      * @throws IllegalArgumentException если цена отрицательная
-     * @see #updateProduct(int, String, String, String, double, String)
      * @see #deleteProduct(int)
      */
     Product addProduct(String name, String category, String brand,
-                       double price, String description);
+                       BigDecimal price, String description);
 
     /**
      * Возвращает все товары из каталога.
@@ -131,10 +131,9 @@ public interface CatalogService {
      * @param description новое описание (может быть {@code null})
      * @return {@code true} если товар успешно обновлён, {@code false} если товар не найден
      * @throws IllegalArgumentException если какое-либо поле невалидно
-     * @see #addProduct(String, String, String, double, String)
      */
     boolean updateProduct(int id, String name, String category, String brand,
-                          double price, String description);
+                          BigDecimal price, String description);
 
     /**
      * Удаляет товар из каталога.
@@ -148,7 +147,6 @@ public interface CatalogService {
      *
      * @param id идентификатор товара для удаления
      * @return {@code true} если товар успешно удалён, {@code false} если товар не найден
-     * @see #addProduct(String, String, String, double, String)
      */
     boolean deleteProduct(int id);
 
@@ -212,7 +210,7 @@ public interface CatalogService {
      * @return список товаров в указанном ценовом диапазоне (может быть пустым, но никогда {@code null})
      * @throws IllegalArgumentException если {@code minPrice > maxPrice} или цены отрицательные
      */
-    List<Product> filterByPriceRange(double minPrice, double maxPrice);
+    List<Product> filterByPriceRange(BigDecimal minPrice, BigDecimal maxPrice);
 
     /**
      * Возвращает общее количество товаров в каталоге.

@@ -1,7 +1,8 @@
-package main.java.ru.ylab.service;
+package ru.ylab.service;
 
-import main.java.ru.ylab.model.AuditRecord;
-import main.java.ru.ylab.model.enums.Action;
+
+import ru.ylab.model.AuditRecord;
+import ru.ylab.model.enums.Action;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.List;
  *
  * @see AuditRecord
  * @see Action
- * @author Ваше Имя
+ * @author Makhmudov Nurmukhammad
  * @version 1.0
  * @since 2025-11-09
  */

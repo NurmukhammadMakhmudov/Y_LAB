@@ -1,6 +1,6 @@
-package main.java.ru.ylab.service;
+package ru.ylab.service;
 
-import main.java.ru.ylab.model.Product;
+import ru.ylab.model.Product;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ import java.util.List;
  * </p>
  *
  * @see Product
- * @author Ваше Имя
+ * @author Makhmudov Nurmukhammad
  * @version 1.0
  * @since 2025-11-09
  */
